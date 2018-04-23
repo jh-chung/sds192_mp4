@@ -16,7 +16,9 @@ library(tidyverse)
 ```
 
 ```{r (Connecting to the Database)}
-db <- dbConnect_scidb(dbname = "imdb")
+db <- dbConnect_scidb(dbname = "lahman")
 ```
+
+
 
 
