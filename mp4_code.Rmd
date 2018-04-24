@@ -9,7 +9,7 @@ output:
     theme: spacelab
 ---
 
-```{r (Packages)}
+```{r (Packages), warning = FALSE, message = FALSE}
 library(mdsr)
 library(RMySQL)
 library(tidyverse)
