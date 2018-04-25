@@ -19,6 +19,38 @@ library(tidyverse)
 db <- dbConnect_scidb(dbname = "lahman")
 ```
 
+```{r}
+pitchers <- db %>% 
+  dbGetQuery(
+    "SELECT hof.playerID, hof.yearID, nameFirst, nameLast, 
+    sum(G) as G, sum(pi.GS) as GS, sum(IPouts/3) as IP, 
+    sum(CG) as CG, sum(SHO) as SHO, sum(SV) as SV, sum(W) as W,
+    sum(L) as L, sum(H) as H, sum(BB) as BB, sum(ER) as ER,
+    sum(SO) as SO, ((sum(ER) / (sum(IPouts)/3)) * 9) as ERA, 
+    ((sum(H) + sum(BB)) / (sum(IPouts) / 3)) as WHIP
+    FROM HallOfFame hof
+    JOIN Master ma ON ma.playerID = hof.playerID
+    JOIN Pitching pi ON pi.playerID = hof.playerID
+    WHERE hof.inducted = 'Y'
+    GROUP BY hof.playerID
+HAVING G > 100;"
+  )
+```
+
+```{r}
+hitters <- db %>% 
+  dbGetQuery("SELECT hof.playerID, hof.yearID, nameFirst,
+              nameLast, sum(AB) as AB, sum(R) as R, sum(H) as H,
+              sum(2B) as 2B, sum(3B) as 3B, sum(HR) as HR,
+              sum(RBI) as RBI, sum(SB) as SB
+              FROM HallOfFame hof
+              JOIN Master ma ON ma.playerID = hof.playerID
+              JOIN Batting ba ON ba.playerID = hof.playerID
+              WHERE hof.inducted = 'Y'
+              GROUP BY hof.playerID
+              HAVING AB > 2000;")
+```
+
 
 
 
