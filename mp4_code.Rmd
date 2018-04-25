@@ -19,7 +19,7 @@ library(tidyverse)
 db <- dbConnect_scidb(dbname = "lahman")
 ```
 
-```{r}
+```{r warning = FALSE}
 pitchers <- db %>% 
   dbGetQuery(
     "SELECT hof.playerID, hof.yearID, nameFirst, nameLast, 
@@ -35,9 +35,10 @@ pitchers <- db %>%
     GROUP BY hof.playerID
 HAVING G > 100;"
   )
+pitchers
 ```
 
-```{r}
+```{r warning = FALSE}
 hitters <- db %>% 
   dbGetQuery("SELECT hof.playerID, hof.yearID, nameFirst,
               nameLast, sum(AB) as AB, sum(R) as R, sum(H) as H,
@@ -49,6 +50,7 @@ hitters <- db %>%
               WHERE hof.inducted = 'Y'
               GROUP BY hof.playerID
               HAVING AB > 2000;")
+hitters
 ```
 
 
