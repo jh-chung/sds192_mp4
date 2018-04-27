@@ -53,6 +53,14 @@ hitters <- db %>%
 hitters
 ```
 
-
+```{r}
+not_inducted <- db %>%
+  dbGetQuery("SELECT playerID, yearid, ballots, needed, votes, inducted, 
+sum(inducted = 'Y') as indct
+FROM HallOfFame
+GROUP BY playerID
+HAVING indct = 0")
+not_inducted
+```
 
 
