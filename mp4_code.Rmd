@@ -81,4 +81,21 @@ ORDER BY PCT desc;")
 batters_not_inducted
 ```
 
+```{r}
+pitchers_not_inducted <- db %>%
+  dbGetQuery("SELECT hof.playerID, hof.yearID, ma.nameFirst, ma.nameLast, hof.ballots , hof.needed , hof.votes , (votes/ballots) as PCT , hof.inducted,
+    sum(inducted = 'Y') as indct ,sum(G) as G, sum(pi.GS) as GS, sum(IPouts/3) as IP, 
+    sum(CG) as CG, sum(SHO) as SHO, sum(SV) as SV, sum(W) as W,
+    sum(L) as L, sum(H) as H, sum(BB) as BB, sum(ER) as ER,
+    sum(SO) as SO, ((sum(ER) / (sum(IPouts)/3)) * 9) as ERA, 
+    ((sum(H) + sum(BB)) / (sum(IPouts) / 3)) as WHIP 
+    FROM lahman.HallOfFame AS hof
+    JOIN lahman.Master AS ma on ma.playerID = hof.playerID
+    JOIN lahman.Pitching AS pi on pi.playerID = hof.playerID
+    GROUP BY ma.playerID
+    HAVING indct = 0
+    ORDER BY PCT desc;")
+
+pitchers_not_inducted
+```
 
