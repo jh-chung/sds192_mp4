@@ -89,9 +89,9 @@ batters_not_inducted
 
 ```{r}
 pitchers_not_inducted <- db %>%
-  dbGetQuery("SELECT hof.playerID, nameFirst, nameLast,
-              min(hof.yearid) AS first_year, ballots, needed,
-              votes, max(votes/ballots) as PCT, 
+  dbGetQuery("SELECT hof.playerID, hof.yearID, nameFirst,
+              nameLast, min(hof.yearid) AS first_year, ballots,
+              needed, votes, max(votes/ballots) as PCT, 
               sum(inducted = 'Y') as indct, sum(G) as G,
               sum(pi.GS) as GS, sum(IPouts/3) as IP,
               sum(CG) as CG, sum(SHO) as SHO, sum(SV) as SV,
@@ -102,11 +102,10 @@ pitchers_not_inducted <- db %>%
     FROM lahman.HallOfFame AS hof
     JOIN lahman.Master AS ma on ma.playerID = hof.playerID
     JOIN lahman.Pitching AS pi on pi.playerID = hof.playerID
-    WHERE hof.yearid > 1979
     GROUP BY hof.playerID
     HAVING indct = 0
-      AND G > 100
       AND PCT > 0.2
+      AND G > 100
     ORDER BY PCT desc;")
 
 pitchers_not_inducted
