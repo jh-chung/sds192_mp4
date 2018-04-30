@@ -19,7 +19,7 @@ library(tidyverse)
 db <- dbConnect_scidb(dbname = "lahman")
 ```
 
-```{r warning = FALSE}
+```{r (Pitchers), warning = FALSE}
 pitchers <- db %>% 
   dbGetQuery(
     "SELECT hof.playerID, hof.yearID, nameFirst, nameLast, 
@@ -38,7 +38,7 @@ HAVING G > 100;"
 pitchers
 ```
 
-```{r warning = FALSE}
+```{r (Hitters), warning = FALSE}
 hitters <- db %>% 
   dbGetQuery("SELECT hof.playerID, hof.yearID, nameFirst,
               nameLast, sum(AB) as AB, sum(R) as R, sum(H) as H,
@@ -53,7 +53,7 @@ hitters <- db %>%
 hitters
 ```
 
-```{r}
+```{r (not inducted), warning = FALSE}
 not_inducted <- db %>%
   dbGetQuery("SELECT playerID, yearid, ballots, needed, votes, inducted, 
 sum(inducted = 'Y') as indct
@@ -63,7 +63,7 @@ HAVING indct = 0")
 not_inducted
 ```
 
-```{r}
+```{r (batteres not inducted), warning = FALSE}
 batters_not_inducted <- db %>% 
   dbGetQuery("SELECT hof.playerID, nameLast, nameFirst, 
               min(hof.yearid) AS first_year, ballots, needed,
@@ -78,7 +78,7 @@ JOIN Master ma ON ma.playerID = hof.playerID
 GROUP BY hof.playerID
 HAVING indct = 0
 ORDER BY PCT desc;")
-batters_not_inducted
+
 ```
 
 
