@@ -78,7 +78,7 @@ JOIN Master ma ON ma.playerID = hof.playerID
 GROUP BY hof.playerID
 HAVING indct = 0
 ORDER BY PCT desc;")
-
+batters_not_inducted
 ```
 
 ```{r}
@@ -95,7 +95,6 @@ pitchers_not_inducted <- db %>%
     GROUP BY ma.playerID
     HAVING indct = 0
     ORDER BY PCT desc;")
-
 pitchers_not_inducted
 ```
 
