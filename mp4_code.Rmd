@@ -43,7 +43,8 @@ hitters <- db %>%
   dbGetQuery("SELECT hof.playerID, hof.yearID, nameFirst,
               nameLast, sum(AB) as AB, sum(R) as R, sum(H) as H,
               sum(2B) as 2B, sum(3B) as 3B, sum(HR) as HR,
-              sum(RBI) as RBI, sum(SB) as SB
+              sum(RBI) as RBI, sum(SB) as SB, 
+              (sum(H) / sum(AB)) as AVG
               FROM HallOfFame hof
               JOIN Master ma ON ma.playerID = hof.playerID
               JOIN Batting ba ON ba.playerID = hof.playerID
@@ -71,6 +72,7 @@ batters_not_inducted <- db %>%
              sum(AB) as AB, sum(R) as R, sum(H) as H,
              sum(2B) as 2B, sum(3B) as 3B, sum(HR) as HR,
              sum(RBI) as RBI, sum(SB) as SB, 
+             (sum(H) / sum(AB)) as AVG
              sum(inducted = 'Y') as indct
 FROM HallOfFame as hof
 JOIN Batting ba ON ba.playerID = hof.playerID
@@ -116,5 +118,10 @@ all_hitters <- hitters %>%
 
 all_pitchers <- pitchers %>% 
   full_join(pitchers_not_inducted)
+```
+
+```{r}
+ggplot(all_hitters, aes(x = HR, y = AVG)) +
+  geom_point()
 ```
 
