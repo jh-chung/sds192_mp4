@@ -110,3 +110,11 @@ pitchers_not_inducted <- db %>%
 pitchers_not_inducted
 ```
 
+```{r}
+all_hitters <- hitters %>% 
+  full_join(batters_not_inducted)
+
+all_pitchers <- pitchers %>% 
+  full_join(pitchers_not_inducted)
+```
+
