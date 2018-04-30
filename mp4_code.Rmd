@@ -98,4 +98,4 @@ pitchers_not_inducted <- db %>%
 
 pitchers_not_inducted
 ```
-
+# Use save() to save it as a .rda and then load() it later w/ eval = FALSE
