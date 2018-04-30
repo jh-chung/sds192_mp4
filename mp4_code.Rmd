@@ -72,7 +72,7 @@ batters_not_inducted <- db %>%
              sum(AB) as AB, sum(R) as R, sum(H) as H,
              sum(2B) as 2B, sum(3B) as 3B, sum(HR) as HR,
              sum(RBI) as RBI, sum(SB) as SB, 
-             (sum(H) / sum(AB)) as AVG
+             (sum(H) / sum(AB)) as AVG,
              sum(inducted = 'Y') as indct
 FROM HallOfFame as hof
 JOIN Batting ba ON ba.playerID = hof.playerID
@@ -121,7 +121,13 @@ all_pitchers <- pitchers %>%
 ```
 
 ```{r}
-ggplot(all_hitters, aes(x = HR, y = AVG)) +
+ggplot(all_hitters, aes(x = AVG, y = HR)) +
+  geom_point() +
+  scale_y_continuous(limits = c(0, 800))
+```
+
+```{r}
+ggplot(all_pitchers, aes(x = ERA, y = W)) +
   geom_point()
 ```
 
