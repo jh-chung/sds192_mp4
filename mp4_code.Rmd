@@ -66,14 +66,20 @@ not_inducted
 
 ```{r (batteres not inducted), warning = FALSE}
 batters_not_inducted <- db %>% 
-  dbGetQuery("SELECT hof.playerID, nameLast, nameFirst, 
+  dbGetQuery("SELECT hof.playerID, nameLast, nameFirst,
+              count(DISTINCT hof.yearID) as num_ballots,
               min(hof.yearid) AS first_year, ballots, needed,
               votes, inducted, max(votes / ballots) as PCT,
-             sum(AB) as AB, sum(R) as R, sum(H) as H,
-             sum(2B) as 2B, sum(3B) as 3B, sum(HR) as HR,
-             sum(RBI) as RBI, sum(SB) as SB, 
-             (sum(H) / sum(AB)) as AVG,
-             sum(inducted = 'Y') as indct
+              sum(AB) / count(DISTINCT hof.yearID) as AB, 
+              sum(R) / count(DISTINCT hof.yearID) as R, 
+              sum(H) / count(DISTINCT hof.yearID) as H,
+              sum(2B) / count(DISTINCT hof.yearID) as 2B, 
+              sum(3B) / count(DISTINCT hof.yearID) as 3B, 
+              sum(HR) / count(DISTINCT hof.yearID) as HR,
+              sum(RBI) / count(DISTINCT hof.yearID) as RBI,
+              sum(SB) / count(DISTINCT hof.yearID) as SB, 
+              (sum(H) / sum(AB)) as AVG,
+              sum(inducted = 'Y') as indct
 FROM HallOfFame as hof
 JOIN Batting ba ON ba.playerID = hof.playerID
 JOIN Master ma ON ma.playerID = hof.playerID
@@ -100,6 +106,8 @@ JOIN lahman.Master AS ma on ma.playerID = hof.playerID
 JOIN lahman.Pitching AS pi on pi.playerID = hof.playerID
 GROUP BY ma.playerID
 HAVING indct = 0
+  AND PCT > 0.2
+  AND G > 100
 ORDER BY PCT desc;")
 
 pitchers_not_inducted
