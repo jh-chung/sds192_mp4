@@ -87,7 +87,7 @@ ORDER BY PCT desc;")
 batters_not_inducted
 ```
 
-```{r}
+```{r warning = FALSE}
 pitchers_not_inducted <- db %>%
   dbGetQuery("SELECT hof.playerID, hof.yearID, nameFirst,
               nameLast, min(hof.yearid) AS first_year, ballots,
@@ -112,9 +112,7 @@ pitchers_not_inducted
 # Use save() to save it as a .rda and then load() it later w/ eval = FALSE
 ```
 
-
-
-```{r}
+```{r message = FALSE, warning = FALSE}
 all_hitters <- hitters %>% 
   full_join(batters_not_inducted)
 
@@ -152,4 +150,44 @@ ggplot(batters_not_inducted, aes(x = AVG, y = HR)) +
   geom_point() +
   ggtitle("Hitters not Inducted")
 ```
+
+```{r warning = FALSE}
+hittersss <- db %>% 
+  dbGetQuery("SELECT hof.playerID, hof.yearID, nameFirst, hof.inducted,
+              nameLast, sum(AB) as AB, sum(R) as R, sum(H) as H,
+              sum(2B) as 2B, sum(3B) as 3B, sum(HR) as HR,
+              sum(RBI) as RBI, sum(SB) as SB, 
+              (sum(H) / sum(AB)) as AVG
+              FROM HallOfFame hof
+              JOIN Master ma ON ma.playerID = hof.playerID
+              JOIN Batting ba ON ba.playerID = hof.playerID
+              GROUP BY hof.playerID
+              HAVING AB > 2000;")
+
+ggplot(hittersss, aes(x = AVG, y = HR, colour = inducted)) +
+  geom_point() +
+  ggtitle("All Hitters")
+```
+
+```{r warning = FALSE}
+pitchersss <- db %>% 
+  dbGetQuery(
+    "SELECT hof.playerID, hof.yearID, nameFirst, nameLast, hof.inducted,
+    sum(G) as G, sum(pi.GS) as GS, sum(IPouts/3) as IP, 
+    sum(CG) as CG, sum(SHO) as SHO, sum(SV) as SV, sum(W) as W,
+    sum(L) as L, sum(H) as H, sum(BB) as BB, sum(ER) as ER,
+    sum(SO) as SO, ((sum(ER) / (sum(IPouts)/3)) * 9) as ERA, 
+    ((sum(H) + sum(BB)) / (sum(IPouts) / 3)) as WHIP
+    FROM HallOfFame hof
+    JOIN Master ma ON ma.playerID = hof.playerID
+    JOIN Pitching pi ON pi.playerID = hof.playerID
+    GROUP BY hof.playerID
+HAVING G > 100;"
+  )
+
+ggplot(pitchersss, aes(x = ERA, y = W, color = inducted)) + 
+  geom_point() +
+  ggtitle("All Pitchers")
+```
+
 
