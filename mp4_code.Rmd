@@ -19,7 +19,7 @@ library(tidyverse)
 db <- dbConnect_scidb(dbname = "lahman")
 ```
 
-```{r warning = FALSE}
+```{r (Pitchers), warning = FALSE}
 pitchers <- db %>% 
   dbGetQuery(
     "SELECT hof.playerID, hof.yearID, nameFirst, nameLast, 
@@ -38,12 +38,13 @@ HAVING G > 100;"
 pitchers
 ```
 
-```{r warning = FALSE}
+```{r (Hitters), warning = FALSE}
 hitters <- db %>% 
   dbGetQuery("SELECT hof.playerID, hof.yearID, nameFirst,
               nameLast, sum(AB) as AB, sum(R) as R, sum(H) as H,
               sum(2B) as 2B, sum(3B) as 3B, sum(HR) as HR,
-              sum(RBI) as RBI, sum(SB) as SB
+              sum(RBI) as RBI, sum(SB) as SB, 
+              (sum(H) / sum(AB)) as AVG
               FROM HallOfFame hof
               JOIN Master ma ON ma.playerID = hof.playerID
               JOIN Batting ba ON ba.playerID = hof.playerID
@@ -53,7 +54,7 @@ hitters <- db %>%
 hitters
 ```
 
-```{r}
+```{r (not inducted), warning = FALSE}
 not_inducted <- db %>%
   dbGetQuery("SELECT playerID, yearid, ballots, needed, votes, inducted, 
 sum(inducted = 'Y') as indct
@@ -63,39 +64,73 @@ HAVING indct = 0")
 not_inducted
 ```
 
-```{r}
+```{r (batteres not inducted), warning = FALSE}
 batters_not_inducted <- db %>% 
   dbGetQuery("SELECT hof.playerID, nameLast, nameFirst, 
               min(hof.yearid) AS first_year, ballots, needed,
-              votes, inducted, (votes / ballots) as PCT,
+              votes, inducted, max(votes / ballots) as PCT,
              sum(AB) as AB, sum(R) as R, sum(H) as H,
              sum(2B) as 2B, sum(3B) as 3B, sum(HR) as HR,
              sum(RBI) as RBI, sum(SB) as SB, 
+             (sum(H) / sum(AB)) as AVG,
              sum(inducted = 'Y') as indct
 FROM HallOfFame as hof
 JOIN Batting ba ON ba.playerID = hof.playerID
 JOIN Master ma ON ma.playerID = hof.playerID
+WHERE hof.yearid > 1979
 GROUP BY hof.playerID
 HAVING indct = 0
+  AND AB > 4000
+  AND PCT > 0.2
 ORDER BY PCT desc;")
+
 batters_not_inducted
 ```
 
 ```{r}
 pitchers_not_inducted <- db %>%
-  dbGetQuery("SELECT hof.playerID, hof.yearID, ma.nameFirst, ma.nameLast, hof.ballots , hof.needed , hof.votes , (votes/ballots) as PCT , hof.inducted,
-    sum(inducted = 'Y') as indct ,sum(G) as G, sum(pi.GS) as GS, sum(IPouts/3) as IP, 
-    sum(CG) as CG, sum(SHO) as SHO, sum(SV) as SV, sum(W) as W,
-    sum(L) as L, sum(H) as H, sum(BB) as BB, sum(ER) as ER,
-    sum(SO) as SO, ((sum(ER) / (sum(IPouts)/3)) * 9) as ERA, 
-    ((sum(H) + sum(BB)) / (sum(IPouts) / 3)) as WHIP 
+  dbGetQuery("SELECT hof.playerID, hof.yearID, nameFirst,
+              nameLast, min(hof.yearid) AS first_year, ballots,
+              needed, votes, max(votes/ballots) as PCT, 
+              sum(inducted = 'Y') as indct, sum(G) as G,
+              sum(pi.GS) as GS, sum(IPouts/3) as IP,
+              sum(CG) as CG, sum(SHO) as SHO, sum(SV) as SV,
+              sum(W) as W, sum(L) as L, sum(H) as H, 
+              sum(BB) as BB, sum(ER) as ER, sum(SO) as SO,
+              ((sum(ER) / (sum(IPouts)/3)) * 9) as ERA,
+              ((sum(H) + sum(BB)) / (sum(IPouts) / 3)) as WHIP 
     FROM lahman.HallOfFame AS hof
     JOIN lahman.Master AS ma on ma.playerID = hof.playerID
     JOIN lahman.Pitching AS pi on pi.playerID = hof.playerID
-    GROUP BY ma.playerID
+    GROUP BY hof.playerID
     HAVING indct = 0
+      AND PCT > 0.2
+      AND G > 100
     ORDER BY PCT desc;")
 
 pitchers_not_inducted
-```
 # Use save() to save it as a .rda and then load() it later w/ eval = FALSE
+```
+
+
+
+```{r}
+all_hitters <- hitters %>% 
+  full_join(batters_not_inducted)
+
+all_pitchers <- pitchers %>% 
+  full_join(pitchers_not_inducted)
+```
+
+```{r}
+ggplot(all_hitters, aes(x = AVG, y = HR)) +
+  geom_point() +
+  scale_y_continuous(limits = c(0, 800))
+```
+
+```{r}
+ggplot(all_pitchers, aes(x = ERA, y = W)) +
+  geom_point()
+```
+
+
