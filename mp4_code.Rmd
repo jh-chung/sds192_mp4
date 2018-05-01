@@ -136,21 +136,29 @@ ggplot(all_pitchers, aes(x = ERA, y = W)) +
 ```{r fig.show = "hold", fig.width = 3.5}
 ggplot(pitchers, aes(x = ERA, y = W)) + 
   geom_point() +
-  ggtitle("Pitchers Inducted")
+  ggtitle("Pitchers Inducted") +
+  xlim(1.5,4) +
+  ylim(0,520)
 
 ggplot(pitchers_not_inducted, aes(x = ERA, y = W)) + 
   geom_point() +
-  ggtitle("Pitchers not Inducted")
+  ggtitle("Pitchers not Inducted") +
+  xlim(1.5,4) +
+  ylim(0,520)
 ```
 
 ```{r fig.show = "hold", fig.width = 3.5}
 ggplot(hitters, aes(x = AVG, y = HR)) +
   geom_point() +
-  ggtitle("Hitters Inducted")
+  ggtitle("Hitters Inducted") +
+  xlim(.15, .4) +
+  ylim(0,850)
 
 ggplot(batters_not_inducted, aes(x = AVG, y = HR)) +
   geom_point() +
-  ggtitle("Hitters not Inducted")
+  ggtitle("Hitters not Inducted") +
+  xlim(0, .4) +
+  ylim(.15,850)
 ```
 
 ```{r warning = FALSE}
