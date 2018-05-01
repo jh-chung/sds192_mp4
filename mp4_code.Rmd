@@ -166,7 +166,7 @@ hittersss <- db %>%
 
 ggplot(hittersss, aes(x = AVG, y = HR, colour = inducted)) +
   geom_point() +
-  ggtitle("All Hitters")
+  ggtitle("All Hitters") 
 ```
 
 ```{r warning = FALSE}
