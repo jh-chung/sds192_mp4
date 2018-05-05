@@ -137,7 +137,7 @@ ggplot(all_pitchers, aes(x = ERA, y = W)) +
 
 ```{r message = FALSE}
 pp <- ggplot(pitchers, aes(x = ERA, y = W)) + 
-  geom_point() +
+  geom_point(text = paste(nameFirst, " ", nameLast)) +
   ggtitle("Pitchers Inducted") +
   xlim(1.5,4) +
   ylim(0,520)
@@ -146,7 +146,7 @@ ggplotly(pp)
 
 ```{r}
 pnp <- ggplot(pitchers_not_inducted, aes(x = ERA, y = W)) + 
-  geom_point() +
+  geom_point(aes(text = paste(nameFirst, " ", nameLast))) +
   ggtitle("Pitchers not Inducted") +
   xlim(1.5,4) +
   ylim(0,520)
@@ -165,14 +165,14 @@ ggplot(pitchers_not_inducted, aes(x = ERA, y = W)) +
 
 ```{r message = FALSE}
 hp <- ggplot(hitters, aes(x = AVG, y = HR)) +
-  geom_point() +
+  geom_point(aes(text = paste(nameFirst, " ", nameLast))) +
   ggtitle("Hitters Inducted") +
   xlim(.15, .4) +
   ylim(0,850)
 ggplotly(hp)
 
 bnp <- ggplot(batters_not_inducted, aes(x = AVG, y = HR)) +
-  geom_point() +
+  geom_point(aes(text = paste(nameFirst, " ", nameLast))) +
   ggtitle("Hitters not Inducted") +
   xlim(0, .4) +
   ylim(.15,850)
@@ -204,7 +204,7 @@ HAVING AB > 4000
 ORDER BY PCT desc;")
 
 bhp <- ggplot(both_hitters, aes(x = AVG, y = HR, colour = inducted)) +
-  geom_point() +
+  geom_point(data = both_hitters, text = paste(nameFirst, " ", nameLast)) +
   ggtitle("All Hitters") +
   xlim(0, .4) +
   ylim(.15,850)
@@ -229,7 +229,7 @@ HAVING PCT > 0.2
 ORDER BY PCT desc;")
 
 bpp <- ggplot(both_pitchers, aes(x = ERA, y = W, color = inducted)) + 
-  geom_point() +
+  geom_point(text = paste(nameFirst, " ", nameLast)) +
   ggtitle("All Pitchers") +
   xlim(1.5,4) +
   ylim(0,520)
