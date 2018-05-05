@@ -162,42 +162,57 @@ ggplot(batters_not_inducted, aes(x = AVG, y = HR)) +
 ```
 
 ```{r warning = FALSE}
-hittersss <- db %>% 
-  dbGetQuery("SELECT hof.playerID, hof.yearID, nameFirst, hof.inducted,
-              nameLast, sum(AB) as AB, sum(R) as R, sum(H) as H,
-              sum(2B) as 2B, sum(3B) as 3B, sum(HR) as HR,
-              sum(RBI) as RBI, sum(SB) as SB, 
+both_hitters <- db %>% 
+  dbGetQuery("SELECT hof.playerID, nameLast, nameFirst,
+              count(DISTINCT hof.yearID) as num_ballots,
+              min(hof.yearid) AS first_year, ballots, needed,
+              votes, inducted, max(votes / ballots) as PCT,
+              sum(AB) / count(DISTINCT hof.yearID) as AB, 
+              sum(R) / count(DISTINCT hof.yearID) as R, 
+              sum(H) / count(DISTINCT hof.yearID) as H,
+              sum(2B) / count(DISTINCT hof.yearID) as 2B, 
+              sum(3B) / count(DISTINCT hof.yearID) as 3B, 
+              sum(HR) / count(DISTINCT hof.yearID) as HR,
+              sum(RBI) / count(DISTINCT hof.yearID) as RBI,
+              sum(SB) / count(DISTINCT hof.yearID) as SB, 
               (sum(H) / sum(AB)) as AVG
-              FROM HallOfFame hof
-              JOIN Master ma ON ma.playerID = hof.playerID
-              JOIN Batting ba ON ba.playerID = hof.playerID
-              GROUP BY hof.playerID
-              HAVING AB > 2000;")
+FROM HallOfFame as hof
+JOIN Batting ba ON ba.playerID = hof.playerID
+JOIN Master ma ON ma.playerID = hof.playerID
+WHERE hof.yearid > 1979
+GROUP BY hof.playerID
+HAVING AB > 4000
+  AND PCT > 0.2
+ORDER BY PCT desc;")
 
-ggplot(hittersss, aes(x = AVG, y = HR, colour = inducted)) +
+ggplot(both_hitters, aes(x = AVG, y = HR, colour = inducted)) +
   geom_point() +
-  ggtitle("All Hitters") 
+  ggtitle("All Hitters") +
+  xlim(0, .4) +
+  ylim(.15,850)
 ```
 
 ```{r warning = FALSE}
-pitchersss <- db %>% 
-  dbGetQuery(
-    "SELECT hof.playerID, hof.yearID, nameFirst, nameLast, hof.inducted,
-    sum(G) as G, sum(pi.GS) as GS, sum(IPouts/3) as IP, 
-    sum(CG) as CG, sum(SHO) as SHO, sum(SV) as SV, sum(W) as W,
-    sum(L) as L, sum(H) as H, sum(BB) as BB, sum(ER) as ER,
-    sum(SO) as SO, ((sum(ER) / (sum(IPouts)/3)) * 9) as ERA, 
-    ((sum(H) + sum(BB)) / (sum(IPouts) / 3)) as WHIP
-    FROM HallOfFame hof
-    JOIN Master ma ON ma.playerID = hof.playerID
-    JOIN Pitching pi ON pi.playerID = hof.playerID
-    GROUP BY hof.playerID
-HAVING G > 100;"
-  )
+both_pitchers <- db %>% 
+  dbGetQuery("SELECT hof.playerID, hof.yearID, ma.nameFirst, ma.nameLast, count(DISTINCT hof.yearID) as num_ballots, hof.ballots , hof.needed , hof.votes , max(votes/ballots) as PCT , hof.inducted,
+    sum(G)/(count(DISTINCT hof.yearID)) as G, sum(GS)/(count(DISTINCT hof.yearID)) as GS, sum(IPouts/3)/(count(DISTINCT hof.yearID)) as IP, 
+    sum(CG) / (count(DISTINCT hof.yearID)) as CG, sum(SHO) / (count(DISTINCT hof.yearID)) as SHO, sum(SV) / (count(DISTINCT hof.yearID)) as SV, sum(W) / (count(DISTINCT hof.yearID)) as W,
+    sum(L) / (count(DISTINCT hof.yearID)) as L, sum(H) / (count(DISTINCT hof.yearID)) as H, sum(BB) / (count(DISTINCT hof.yearID)) as BB, sum(ER) / (count(DISTINCT hof.yearID)) as ER,
+    sum(SO)/(count(DISTINCT hof.yearID)) as SO, ((sum(ER) / (sum(IPouts)/3)) * 9) as ERA, 
+    ((sum(H) + sum(BB)) / (sum(IPouts) / 3)) as WHIP 
+FROM lahman.HallOfFame AS hof
+JOIN lahman.Master AS ma on ma.playerID = hof.playerID
+JOIN lahman.Pitching AS pi on pi.playerID = hof.playerID
+GROUP BY ma.playerID
+HAVING PCT > 0.2
+  AND G > 100
+ORDER BY PCT desc;")
 
-ggplot(pitchersss, aes(x = ERA, y = W, color = inducted)) + 
+ggplot(both_pitchers, aes(x = ERA, y = W, color = inducted)) + 
   geom_point() +
-  ggtitle("All Pitchers")
+  ggtitle("All Pitchers") +
+  xlim(1.5,4) +
+  ylim(0,520)
 ```
 
 
