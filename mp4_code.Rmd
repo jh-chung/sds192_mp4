@@ -13,6 +13,7 @@ output:
 library(mdsr)
 library(RMySQL)
 library(tidyverse)
+library(plotly)
 ```
 
 ```{r (Connecting to the Database)}
@@ -133,35 +134,39 @@ ggplot(all_pitchers, aes(x = ERA, y = W)) +
   geom_point()
 ```
 
-```{r fig.show = "hold", fig.width = 3.5}
-ggplot(pitchers, aes(x = ERA, y = W)) + 
+```{r message = FALSE}
+pp <- ggplot(pitchers, aes(x = ERA, y = W)) + 
   geom_point() +
   ggtitle("Pitchers Inducted") +
   xlim(1.5,4) +
   ylim(0,520)
+ggplotly(pp)
 
-ggplot(pitchers_not_inducted, aes(x = ERA, y = W)) + 
+pnp <- ggplot(pitchers_not_inducted, aes(x = ERA, y = W)) + 
   geom_point() +
   ggtitle("Pitchers not Inducted") +
   xlim(1.5,4) +
   ylim(0,520)
+ggplotly(pnp)
 ```
 
-```{r fig.show = "hold", fig.width = 3.5}
-ggplot(hitters, aes(x = AVG, y = HR)) +
+```{r message = FALSE}
+hp <- ggplot(hitters, aes(x = AVG, y = HR)) +
   geom_point() +
   ggtitle("Hitters Inducted") +
   xlim(.15, .4) +
   ylim(0,850)
+ggplotly(hp)
 
-ggplot(batters_not_inducted, aes(x = AVG, y = HR)) +
+bnp <- ggplot(batters_not_inducted, aes(x = AVG, y = HR)) +
   geom_point() +
   ggtitle("Hitters not Inducted") +
   xlim(0, .4) +
   ylim(.15,850)
+ggplotly(bnp)
 ```
 
-```{r warning = FALSE}
+```{r warning = FALSE, message = FALSE}
 both_hitters <- db %>% 
   dbGetQuery("SELECT hof.playerID, nameLast, nameFirst,
               count(DISTINCT hof.yearID) as num_ballots,
@@ -185,21 +190,23 @@ HAVING AB > 4000
   AND PCT > 0.2
 ORDER BY PCT desc;")
 
-ggplot(both_hitters, aes(x = AVG, y = HR, colour = inducted)) +
+bhp <- ggplot(both_hitters, aes(x = AVG, y = HR, colour = inducted)) +
   geom_point() +
   ggtitle("All Hitters") +
   xlim(0, .4) +
   ylim(.15,850)
+ggplotly(bhp)
+
 ```
 
-```{r warning = FALSE}
+```{r warning = FALSE, message = FALSE}
 both_pitchers <- db %>% 
-  dbGetQuery("SELECT hof.playerID, hof.yearID, ma.nameFirst, ma.nameLast, count(DISTINCT hof.yearID) as num_ballots, hof.ballots , hof.needed , hof.votes , max(votes/ballots) as PCT , hof.inducted,
+  dbGetQuery("SELECT sum(inducted = 'Y') as indct, hof.playerID, hof.yearID, ma.nameFirst, ma.nameLast, count(DISTINCT hof.yearID) as num_ballots, hof.ballots , hof.needed , hof.votes , max(votes/ballots) as PCT , hof.inducted,
     sum(G)/(count(DISTINCT hof.yearID)) as G, sum(GS)/(count(DISTINCT hof.yearID)) as GS, sum(IPouts/3)/(count(DISTINCT hof.yearID)) as IP, 
     sum(CG) / (count(DISTINCT hof.yearID)) as CG, sum(SHO) / (count(DISTINCT hof.yearID)) as SHO, sum(SV) / (count(DISTINCT hof.yearID)) as SV, sum(W) / (count(DISTINCT hof.yearID)) as W,
     sum(L) / (count(DISTINCT hof.yearID)) as L, sum(H) / (count(DISTINCT hof.yearID)) as H, sum(BB) / (count(DISTINCT hof.yearID)) as BB, sum(ER) / (count(DISTINCT hof.yearID)) as ER,
     sum(SO)/(count(DISTINCT hof.yearID)) as SO, ((sum(ER) / (sum(IPouts)/3)) * 9) as ERA, 
-    ((sum(H) + sum(BB)) / (sum(IPouts) / 3)) as WHIP 
+    ((sum(H) + sum(BB)) / (sum(IPouts) / 3)) as WHIP
 FROM lahman.HallOfFame AS hof
 JOIN lahman.Master AS ma on ma.playerID = hof.playerID
 JOIN lahman.Pitching AS pi on pi.playerID = hof.playerID
@@ -208,11 +215,13 @@ HAVING PCT > 0.2
   AND G > 100
 ORDER BY PCT desc;")
 
-ggplot(both_pitchers, aes(x = ERA, y = W, color = inducted)) + 
+bpp <- ggplot(both_pitchers, aes(x = ERA, y = W, color = inducted)) + 
   geom_point() +
   ggtitle("All Pitchers") +
   xlim(1.5,4) +
   ylim(0,520)
+
+ggplotly(bpp)
 ```
 
 
