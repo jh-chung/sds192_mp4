@@ -8,6 +8,9 @@ output:
     df_print: paged
     theme: spacelab
 ---
+  
+  For any baseball player, the highest individual achievement is induction into the Hall of Fame. This is an exclusive club, with 323 inductees, including 226 former Major League Baseball players and 35 players and executives from the Negro League. For our last mini-project, we thought it would be interesting to use data from the lahman data set to explore statistical differences between those inducted in the Hall of Fame and those who were on the cusp, but at least as of yet have not made it. Baseball as a game has changed considerably in the time it has been played, with a greater emphasis being placed on hitting home runs for position players, while strikeouts are at an all-time high. Additionally, as we'll see later on, the game has been tainted somewhat by the steroids era. Our hope in looking at the statistics was to provide some suggestions about certain players that should be inducted into the Hall of Fame among those who have not yet made it.
+  The first thing we did was to spend considerable time working with SQL to narrow down our queries. We wanted to create objects showing meaningful statistics both for pitchers and hitters currently in the Hall of Fame, as well as similar objects for those pitchers and hitters who have not yet made the Hall of Fame. The batters and pitchers inducted in the Hall of Fame are stored as `hitters` and `pitchers` respectively, while those who have not been inducted are stored as `batters_not_inducted` and `pitchers_not_inducted`.
 
 ```{r (Packages), warning = FALSE, message = FALSE}
 library(mdsr)
