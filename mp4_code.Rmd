@@ -232,7 +232,7 @@ HAVING PCT > 0.2
 ORDER BY PCT desc;")
 
 bpp <- ggplot(both_pitchers, aes(x = ERA, y = W, color = inducted)) + 
-  geom_point(text = paste(nameFirst, " ", nameLast)) +
+  geom_point(data = both_pitchers, text = paste(nameFirst, " ", nameLast)) +
   ggtitle("All Pitchers") +
   xlim(1.5,4) +
   ylim(0,520)
