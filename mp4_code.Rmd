@@ -177,8 +177,8 @@ ggplotly(hp)
 bnp <- ggplot(batters_not_inducted, aes(x = AVG, y = HR)) +
   geom_point(aes(text = paste(nameFirst, " ", nameLast))) +
   ggtitle("Hitters not Inducted") +
-  xlim(0, .4) +
-  ylim(.15,850)
+  xlim(.15, .4) +
+  ylim(0,850)
 ggplotly(bnp)
 ```
 
