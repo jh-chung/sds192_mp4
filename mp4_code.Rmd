@@ -129,6 +129,28 @@ all_pitchers <- pitchers %>%
 ```
 
 ```{r}
+hitters <- hitters %>% 
+  mutate(SLG = ((hitters$'2B' * 2) + (hitters$'3B' * 3) + (hitters$'HR' * 4) + (hitters$'H' - hitters$'2B' - hitters$'3B' - hitters$'HR')) / hitters$'AB')
+```
+
+```{r}
+hit_2 <- ggplot(hitters, aes(x = yearID, y = HR)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+hit_3 <- ggplot(hitters, aes(x = yearID, y = AVG)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+hit_4 <- ggplot(hitters, aes(x = yearID, y = SB)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+hit_5 <- ggplot(hitters, aes(x = yearID, y = SLG)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+grid.arrange(hit_2, hit_3, hit_4, hit_5, ncol = 2)
+```
+
+```{r}
 ggplot(all_hitters, aes(x = AVG, y = HR)) +
   geom_point() +
   scale_y_continuous(limits = c(0, 800))
