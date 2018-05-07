@@ -149,12 +149,29 @@ ggplotly(pp)
 ```
 
 ```{r}
-pnp <- ggplot(pitchers_not_inducted, aes(x = ERA, y = W)) + 
-  geom_point(aes(text = paste(nameFirst, " ", nameLast))) +
-  ggtitle("Pitchers not Inducted") +
-  xlim(1.5,4) +
-  ylim(0,520)
-ggplotly(pnp)
+pnp <- plot_ly(data = pitchers_not_inducted, x = ~ERA, y = ~W , text = rownames(pitchers_not_inducted)) %>%
+  add_markers %>%
+  layout(xaxis = list(range = c(1.5 , 4)))%>%
+  theme_tufte()
+
+
+f <- list(
+  family = "Courier New, monospace",
+  size = 18,
+  color = "#7f7f7f"
+)
+era_x <- list(
+  title = "ERA",
+  titlefont = f
+)
+wins_y <- list(
+  title = "W",
+  titlefont = f
+)
+
+plot_ly(pitchers_not_inducted, x = ~ERA, y = ~W, type = 'scatter', mode = 'markers',
+        text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
+          layout(title = "Pitchers Not Inducted" , xaxis = era_x , yaxis = wins_y)
 ```
 
 ```{r}
@@ -168,19 +185,18 @@ ggplot(pitchers_not_inducted, aes(x = ERA, y = W)) +
 ```
 
 ```{r message = FALSE}
-hp <- ggplot(hitters, aes(x = AVG, y = HR)) +
-  geom_point(aes(text = paste(nameFirst, " ", nameLast))) +
-  ggtitle("Hitters Inducted") +
-  xlim(.15, .4) +
-  ylim(0,850)
-ggplotly(hp)
+h_1 <- plot_ly(hitters, x = ~AVG, y = ~HR, type = 'scatter', mode = 'markers',
+        text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
+          layout(title = "Batters Inducted" , xaxis = avg_x , yaxis = hr_y)
 
-bnp <- ggplot(batters_not_inducted, aes(x = AVG, y = HR)) +
-  geom_point(aes(text = paste(nameFirst, " ", nameLast))) +
-  ggtitle("Hitters not Inducted") +
-  xlim(.15, .4) +
-  ylim(0,850)
+h_2 <- plot_ly(batters_not_inducted, x = ~AVG, y = ~HR, type = 'scatter', mode = 'markers',
+        text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
+          layout(title = "Batter Not Inducted" , xaxis = avg_x , yaxis = hr_y)
+
+h_arranged<- subplot(h_1 , h_2 , titleX = TRUE , titleY = TRUE) %>%
+  layout(showlegend = FALSE , title = "Batters on Ballot")
 ggplotly(bnp)
+
 ```
 
 ```{r warning = FALSE, message = FALSE}
