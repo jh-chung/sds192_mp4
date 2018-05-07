@@ -19,6 +19,8 @@ library(RMySQL)
 library(tidyverse)
 library(plotly)
 library(ggrepel)
+library(gridExtra)
+library(ggthemes)
 ```
 
 ```{r (Connecting to the Database)}
@@ -161,7 +163,7 @@ ggplot(all_pitchers, aes(x = ERA, y = W)) +
   geom_point()
 ```
 
-```{r message = FALSE}
+```{r message = FALSE, eval = FALSE}
 pp <- ggplot(pitchers, aes(x = ERA, y = W)) + 
   geom_point(text = paste(nameFirst, " ", nameLast)) +
   ggtitle("Pitchers Inducted") +
