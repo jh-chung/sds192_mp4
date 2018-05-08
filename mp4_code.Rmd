@@ -146,6 +146,11 @@ pp <- ggplot(pitchers, aes(x = ERA, y = W)) +
   xlim(1.5,4) +
   ylim(0,520)
 ggplotly(pp)
+
+plot_ly(pitchers, x = ~ERA, y = ~W, type = 'scatter', mode = 'markers',
+        text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
+          layout(title = "Pitchers Inducted" , xaxis = era_x , yaxis = wins_y)
+# Jay-Ho code is plot_ly
 ```
 
 ```{r}
