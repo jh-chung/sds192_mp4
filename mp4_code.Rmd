@@ -28,7 +28,7 @@ db <- dbConnect_scidb(dbname = "lahman")
 ```
 
 ```{r (Pitchers), warning = FALSE}
-hof_pitchers <- db %>% 
+pitchers <- db %>% 
   dbGetQuery(
     "SELECT hof.playerID, hof.yearID, nameFirst, nameLast, 
     sum(G) as G, sum(pi.GS) as GS, sum(IPouts/3) as IP, 
@@ -43,11 +43,11 @@ hof_pitchers <- db %>%
     GROUP BY hof.playerID
 HAVING G > 100;"
   )
-hof_pitchers
+pitchers
 ```
 
 ```{r (Hitters), warning = FALSE}
-hof_hitters <- db %>% 
+hitters <- db %>% 
   dbGetQuery("SELECT hof.playerID, hof.yearID, nameFirst,
               nameLast, sum(AB) as AB, sum(R) as R, sum(H) as H,
               sum(2B) as 2B, sum(3B) as 3B, sum(HR) as HR,
@@ -59,7 +59,7 @@ hof_hitters <- db %>%
               WHERE hof.inducted = 'Y'
               GROUP BY hof.playerID
               HAVING AB > 2000;")
-hof_hitters
+hitters
 ```
 
 ```{r (not inducted), warning = FALSE}
@@ -72,7 +72,7 @@ HAVING indct = 0")
 not_inducted
 ```
 
-```{r (batteres not inducted), warning = FALSE}
+```{r (Batters not inducted), warning = FALSE}
 batters_not_inducted <- db %>% 
   dbGetQuery("SELECT hof.playerID, nameLast, nameFirst,
               count(DISTINCT hof.yearID) as num_ballots,
@@ -123,10 +123,10 @@ pitchers_not_inducted
 ```
 
 ```{r message = FALSE, warning = FALSE}
-all_hitters <- hof_hitters %>% 
+all_hitters <- hitters %>% 
   full_join(batters_not_inducted)
 
-all_pitchers <- hof_pitchers %>% 
+all_pitchers <- pitchers %>% 
   full_join(pitchers_not_inducted)
 ```
 
@@ -134,7 +134,7 @@ all_pitchers <- hof_pitchers %>%
   Moving on to the pitchers, we similarly looked at statistical trends in Hall of Fame inductees over time. The most interesting findings are that ERA and Strikeouts has generally increased, and that complete games have decreased. As mentioned in the paragraph above, many hitters have changed their mentality at the plate to try to hit more home runs, at the expense of striking out more. With ERA, the bump in earned runs given up by pitchers may be explained by the fact that hitters have more strength and conditioning than ever before, as well as the help of advanced scouting to look for even the smallest tell in a pitcher's form. Complete games have steadily decreased amonth those inducted to the Hall of Fame. Starting pitchers these days are much less likely to go deep into games, partially because it is generally believe that they expend more effort every pitch/inning, and because the composition of teams is such that there are high quality relievers to take over the game in late innings so that starters don't have to pitch quite so many innings. Another reason is the wear and tear pitching so fast has on arms. The increased number of reconstructive surgeries like Tommy John surgery also play into the fewer number of complete games being thrown.
   
 ```{r}
-hitters <- hof_hitters %>% 
+hitters <- hitters %>% 
   mutate(SLG = ((hitters$'2B' * 2) + (hitters$'3B' * 3) + (hitters$'HR' * 4) + (hitters$'H' - hitters$'2B' - hitters$'3B' - hitters$'HR')) / hitters$'AB')
 ```
 
