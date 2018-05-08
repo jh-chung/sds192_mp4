@@ -138,19 +138,36 @@ hitters <- hitters %>%
 ```{r}
 hit_2 <- ggplot(hitters, aes(x = yearID, y = HR)) +
   geom_point() +
-  geom_smooth(method = "lm")
+  stat_smooth()
 hit_3 <- ggplot(hitters, aes(x = yearID, y = AVG)) +
   geom_point() +
-  geom_smooth(method = "lm")
+  stat_smooth()
 hit_4 <- ggplot(hitters, aes(x = yearID, y = SB)) +
   geom_point() +
-  geom_smooth(method = "lm")
+  stat_smooth()
 hit_5 <- ggplot(hitters, aes(x = yearID, y = SLG)) +
   geom_point() +
-  geom_smooth(method = "lm")
+  stat_smooth()
 
 grid.arrange(hit_2, hit_3, hit_4, hit_5, ncol = 2)
 ```
+
+```{r}
+pit_2 <- ggplot(pitchers, aes(x = yearID, y = W)) +
+  geom_point() +
+  stat_smooth()
+pit_3 <- ggplot(pitchers, aes(x = yearID, y = SO)) +
+  geom_point() +
+  stat_smooth()
+pit_4 <- ggplot(pitchers, aes(x = yearID, y = ERA)) +
+  geom_point() +
+  stat_smooth()
+pit_5 <- ggplot(pitchers, aes(x = yearID, y = CG)) +
+  geom_point() +
+  stat_smooth()
+grid.arrange(pit_2, pit_3, pit_4, pit_5, ncol = 2)
+```
+
 
 ```{r}
 ggplot(all_hitters, aes(x = AVG, y = HR)) +
