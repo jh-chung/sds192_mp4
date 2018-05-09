@@ -220,6 +220,42 @@ pit_5 <- ggplot(pitchers, aes(x = yearID, y = CG)) +
 grid.arrange(pit_2, pit_3, pit_4, pit_5, ncol = 2)
 ```
 
+```{r}
+piit_1 <- plot_ly(pitchers, x = ~yearID, color = I("black")) %>%
+  add_markers(y = ~W, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE) %>%
+  add_lines(y = ~fitted(loess(W ~ yearID)),
+            line = list(color = '#07A4B5'),
+            name = "Trendline", showlegend = FALSE) %>%
+  layout(xaxis = list(title = 'Year'),
+         yaxis = list(title = 'W'))
+
+piit_2 <- plot_ly(pitchers, x = ~yearID, color = I("black")) %>%
+  add_markers(y = ~SO, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE) %>%
+  add_lines(y = ~fitted(loess(SO ~ yearID)),
+            line = list(color = '#07A4B5'),
+            name = "Trendline", showlegend = FALSE) %>%
+  layout(xaxis = list(title = 'Year'),
+         yaxis = list(title = 'SO'))
+
+piit_3 <- plot_ly(pitchers, x = ~yearID, color = I("black")) %>%
+  add_markers(y = ~ERA, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE) %>%
+  add_lines(y = ~fitted(loess(ERA ~ yearID)),
+            line = list(color = '#07A4B5'),
+            name = "Trendline", showlegend = FALSE) %>%
+  layout(xaxis = list(title = 'Year'),
+         yaxis = list(title = 'ERA'))
+
+piit_4 <- plot_ly(pitchers, x = ~yearID, color = I("black")) %>%
+  add_markers(y = ~CG, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE) %>%
+  add_lines(y = ~fitted(loess(CG ~ yearID)),
+            line = list(color = '#07A4B5'),
+            name = "Loess Smoother", showlegend = FALSE) %>%
+  layout(xaxis = list(title = 'Year'),
+         yaxis = list(title = 'CG'))
+
+subplot(piit_1, piit_2, piit_3 , piit_4 , nrows = 2, margin = 0.06, heights = c(.55, .45), titleY = TRUE, titleX = TRUE)
+
+```
 
 ```{r}
 ggplot(all_hitters, aes(x = AVG, y = HR)) +
