@@ -142,27 +142,34 @@ hitters <- hitters %>%
 hit_2 <- ggplot(hitters, aes(x = yearID, y = HR)) +
   geom_point() +
   stat_smooth() +
-  theme_economist() 
+  theme_economist() + 
+  xlab("Year") +
+  ylim(0, 800)
 hit_3 <- ggplot(hitters, aes(x = yearID, y = AVG)) +
   geom_point() +
   stat_smooth() +
-  theme_economist() 
+  theme_economist() + 
+  xlab("Year") +
+  ylim(.18, .4)
 hit_4 <- ggplot(hitters, aes(x = yearID, y = SB)) +
   geom_point() +
   stat_smooth() + 
-  theme_economist() 
+  theme_economist() + 
+  xlab("Year") +
+  ylim(0, 1500)
 hit_5 <- ggplot(hitters, aes(x = yearID, y = SLG)) +
   geom_point() +
   stat_smooth() + 
-  theme_economist() 
+  theme_economist() + 
+  xlab("Year") +
+  ylim(.26, .7)
+          
+hitt_2 <- ggplotly(hit_2)
+hitt_3 <- ggplotly(hit_3)
+hitt_4 <- ggplotly(hit_4)
+hitt_5 <- ggplotly(hit_5)
 
-
-hit_2 <- ggplotly(hit_2)
-hit_3 <- ggplotly(hit_3)
-hit_4 <- ggplotly(hit_4)
-hit_5 <- ggplotly(hit_5)
-
-subplot(hit_2, hit_3, hit_4 , hit_5 , nrows = 2, margin = 0.04, heights = c(0.6, 0.4))
+subplot(hitt_2, hitt_3, hitt_4 , hitt_5 , nrows = 2, margin = 0.06, heights = c(0.55, 0.45), titleY = TRUE, titleX = TRUE)
 ```
 
 ```{r}
