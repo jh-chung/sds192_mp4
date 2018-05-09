@@ -27,7 +27,7 @@ library(ggthemes)
 db <- dbConnect_scidb(dbname = "lahman")
 ```
 
-```{r (Pitchers), warning = FALSE}
+```{r (Pitchers in the Hall of Fame), warning = FALSE}
 pitchers <- db %>% 
   dbGetQuery(
     "SELECT hof.playerID, hof.yearID, nameFirst, nameLast, 
@@ -41,12 +41,12 @@ pitchers <- db %>%
     JOIN Pitching pi ON pi.playerID = hof.playerID
     WHERE hof.inducted = 'Y'
     GROUP BY hof.playerID
-HAVING G > 100;"
+HAVING G > 100;" 
   )
 pitchers
 ```
 
-```{r (Hitters), warning = FALSE}
+```{r (Hitters in the Hall of Fame), warning = FALSE}
 hitters <- db %>% 
   dbGetQuery("SELECT hof.playerID, hof.yearID, nameFirst,
               nameLast, sum(AB) as AB, sum(R) as R, sum(H) as H,
@@ -62,7 +62,7 @@ hitters <- db %>%
 hitters
 ```
 
-```{r (not inducted), warning = FALSE}
+```{r (Players not inducted), warning = FALSE}
 not_inducted <- db %>%
   dbGetQuery("SELECT playerID, yearid, ballots, needed, votes, inducted, 
 sum(inducted = 'Y') as indct
@@ -101,7 +101,7 @@ ORDER BY PCT desc;")
 batters_not_inducted
 ```
 
-```{r warning = FALSE}
+```{r (Pitcheres Not in the Hall of Fame), warning = FALSE}
 pitchers_not_inducted <- db %>%
   dbGetQuery("SELECT hof.playerID, hof.yearID, ma.nameFirst, ma.nameLast, count(DISTINCT hof.yearID) as num_ballots, hof.ballots , hof.needed , hof.votes , max(votes/ballots) as PCT , hof.inducted,
     sum(inducted = 'Y') as indct ,sum(G)/(count(DISTINCT hof.yearID)) as G, sum(GS)/(count(DISTINCT hof.yearID)) as GS, sum(IPouts/3)/(count(DISTINCT hof.yearID)) as IP, 
@@ -138,7 +138,7 @@ hitters <- hitters %>%
   mutate(SLG = ((hitters$'2B' * 2) + (hitters$'3B' * 3) + (hitters$'HR' * 4) + (hitters$'H' - hitters$'2B' - hitters$'3B' - hitters$'HR')) / hitters$'AB')
 ```
 
-```{r (How statistics have changed for HOF batters)}
+```{r (How statistics have changed for HOF batters) , eval = FALSE}
 hit_2 <- ggplot(hitters, aes(x = yearID, y = HR)) +
   geom_point() +
   stat_smooth() +
@@ -172,14 +172,16 @@ hitt_5 <- ggplotly(hit_5)
 subplot(hitt_2, hitt_3, hitt_4 , hitt_5 , nrows = 2, margin = 0.06, heights = c(0.55, 0.45), titleY = TRUE, titleX = TRUE)
 ```
 
-```{r}
-hiit_1 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>%
+```{r (Interactive Graphics for HOF Batters)}
+
+hiit_1 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>% # Showing the yearID when you hover over
   add_markers(y = ~HR, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE) %>%
-  add_lines(y = ~fitted(loess(HR ~ yearID)),
-            line = list(color = '#07A4B5'),
+  add_lines(y = ~fitted(loess(HR ~ yearID)), # Using the loess method for our trend line
+            line = list(color = '#07A4B5'), # Making it a distinct color to separate from the black points
             name = "Trendline", showlegend = FALSE) %>%
-  layout(xaxis = list(title = 'Year'),
-         yaxis = list(title = 'HR'))
+  layout(xaxis = list(title = 'Year'), # Year is on the x-axis
+         yaxis = list(title = 'HR')) # Home run on the y-axis
+
 hiit_2 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>%
   add_markers(y = ~AVG, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE) %>%
   add_lines(y = ~fitted(loess(AVG ~ yearID)),
@@ -187,6 +189,7 @@ hiit_2 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>%
             name = "Trendline", showlegend = FALSE) %>%
   layout(xaxis = list(title = 'Year'),
          yaxis = list(title = 'AVG'))
+
 hiit_3 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>%
   add_markers(y = ~SB, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE) %>%
   add_lines(y = ~fitted(loess(SB ~ yearID)),
@@ -194,6 +197,7 @@ hiit_3 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>%
             name = "Trendline", showlegend = FALSE) %>%
   layout(xaxis = list(title = 'Year'),
          yaxis = list(title = 'SB'))
+
 hiit_4 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>%
   add_markers(y = ~SLG, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE) %>%
   add_lines(y = ~fitted(loess(SLG ~ yearID)),
@@ -201,10 +205,11 @@ hiit_4 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>%
             name = "Loess Smoother", showlegend = FALSE) %>%
   layout(xaxis = list(title = 'Year'),
          yaxis = list(title = 'SLG'))
-subplot(hiit_1, hiit_2, hiit_3 , hiit_4 , nrows = 2, margin = 0.06, heights = c(.55, .45), titleY = TRUE, titleX = TRUE)
+
+subplot(hiit_1, hiit_2, hiit_3 , hiit_4 , nrows = 2, margin = 0.06, heights = c(.55, .45), titleY = TRUE, titleX = TRUE) # Arranging all of the graphs together
 ```
 
-```{r}
+```{r , eval = FALSE}
 pit_2 <- ggplot(pitchers, aes(x = yearID, y = W)) +
   geom_point() +
   stat_smooth()
@@ -220,7 +225,8 @@ pit_5 <- ggplot(pitchers, aes(x = yearID, y = CG)) +
 grid.arrange(pit_2, pit_3, pit_4, pit_5, ncol = 2)
 ```
 
-```{r (HOF pitchers over the years)}
+```{r (HOF pitchers over the years) , eval = TRUE}
+
 piit_1 <- plot_ly(pitchers, x = ~yearID, color = I("black")) %>%
   add_markers(y = ~W, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE) %>%
   add_lines(y = ~fitted(loess(W ~ yearID)),
@@ -254,7 +260,7 @@ piit_4 <- plot_ly(pitchers, x = ~yearID, color = I("black")) %>%
          yaxis = list(title = 'CG'))
 
 subplot(piit_1, piit_2, piit_3 , piit_4 , nrows = 2, margin = 0.06, heights = c(.55, .45), titleY = TRUE, titleX = TRUE)
-
+# Showing all of the HOF pitchers in one graphic
 ```
 
 ```{r}
@@ -279,7 +285,7 @@ ggplotly(pp)
 plot_ly(pitchers, x = ~ERA, y = ~W, type = 'scatter', mode = 'markers',
         text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
           layout(title = "Pitchers Inducted" , xaxis = era_x , yaxis = wins_y)
-# Jay-Ho code is plot_ly
+
 ```
 
 ```{r (Non-Inducted Pitchers Plot)}
@@ -303,16 +309,19 @@ wins_y <- list(
 )
 
 # Plotting the non-inducted pitchers
-plot_ly(pitchers_not_inducted, x = ~ERA, y = ~W, type = 'scatter', mode = 'markers',
+non_hof_pitch <- plot_ly(pitchers_not_inducted, x = ~ERA, y = ~W, type = 'scatter', mode = 'markers',
         text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
           layout(title = "Pitchers Not Inducted" , xaxis = era_x , yaxis = wins_y)
 ```
 
 ```{r (HOF Pitchers)}
 # Plotting for hof_pitchers
-plot_ly(pitchers, x = ~ERA, y = ~W, type = 'scatter', mode = 'markers',
+hof_pitch <- plot_ly(pitchers, x = ~ERA, y = ~W, type = 'scatter', mode = 'markers',
         text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
-          layout(title = "Pitchers Not Inducted" , xaxis = era_x , yaxis = wins_y)
+          layout(title = "Inducted Pitchers" , xaxis = era_x , yaxis = wins_y)
+non_hof_pitch
+
+hof_pitch
 ```
 
 ```{r}
@@ -325,16 +334,16 @@ ggplot(pitchers_not_inducted, aes(x = ERA, y = W)) +
   ylim(0,520)
 ```
 
-```{r message = FALSE}
+```{r (HOF Batters' Interactive Graphics) message = FALSE}
 avg_x <- list(
   title = "AVG",
   titlefont = f
-)
+) # Defining the x-axis title
 
 hr_y <- list(
   title = "HR",
   titlefont = f
-)
+) # Defining the y-axis title
 
 h_1 <- plot_ly(hitters, x = ~AVG, y = ~HR, type = 'scatter', mode = 'markers',
         text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
@@ -347,7 +356,7 @@ h_2 <- plot_ly(batters_not_inducted, x = ~AVG, y = ~HR, type = 'scatter', mode =
 h_arranged<- subplot(h_1 , h_2 , titleX = TRUE , titleY = TRUE) %>%
   layout(showlegend = FALSE , title = "Batters on Ballot")
 
-
+h_arranged
 ```
 
 ```{r warning = FALSE, message = FALSE}
