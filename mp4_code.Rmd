@@ -326,6 +326,16 @@ ggplot(pitchers_not_inducted, aes(x = ERA, y = W)) +
 ```
 
 ```{r message = FALSE}
+avg_x <- list(
+  title = "AVG",
+  titlefont = f
+)
+
+hr_y <- list(
+  title = "HR",
+  titlefont = f
+)
+
 h_1 <- plot_ly(hitters, x = ~AVG, y = ~HR, type = 'scatter', mode = 'markers',
         text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
           layout(title = "Batters Inducted" , xaxis = avg_x , yaxis = hr_y)
@@ -336,7 +346,7 @@ h_2 <- plot_ly(batters_not_inducted, x = ~AVG, y = ~HR, type = 'scatter', mode =
 
 h_arranged<- subplot(h_1 , h_2 , titleX = TRUE , titleY = TRUE) %>%
   layout(showlegend = FALSE , title = "Batters on Ballot")
-ggplotly(bnp)
+
 
 ```
 
@@ -364,6 +374,16 @@ HAVING AB > 4000
   AND PCT > 0.2
 ORDER BY PCT desc;")
 
+plot_ly(both_hitters, x = ~AVG, color = I("black")) %>%
+  add_markers(y = ~HR, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE , color = ~inducted) %>%
+  add_lines(y = ~fitted(loess(HR ~ AVG)),
+            line = list(color = '#000000'),
+            name = "Loess Smoother", showlegend = TRUE) %>%
+  layout(xaxis = list(title = 'AVG'),
+         yaxis = list(title = 'HR'))
+```
+
+```{r eval = FALSE}
 bhp <- ggplot(both_hitters, aes(x = AVG, y = HR, colour = inducted)) +
   geom_point(data = both_hitters, text = paste(nameFirst, " ", nameLast)) +
   ggtitle("All Hitters") +
@@ -373,7 +393,7 @@ ggplotly(bhp)
 
 ```
 
-```{r warning = FALSE, message = FALSE}
+```{r warning = FALSE, message = FALSE , eval = TRUE}
 both_pitchers <- db %>% 
   dbGetQuery("SELECT sum(inducted = 'Y') as indct, hof.playerID, hof.yearID, ma.nameFirst, ma.nameLast, count(DISTINCT hof.yearID) as num_ballots, hof.ballots , hof.needed , hof.votes , max(votes/ballots) as PCT , hof.inducted,
     sum(G)/(count(DISTINCT hof.yearID)) as G, sum(GS)/(count(DISTINCT hof.yearID)) as GS, sum(IPouts/3)/(count(DISTINCT hof.yearID)) as IP, 
@@ -389,6 +409,18 @@ HAVING PCT > 0.2
   AND G > 100
 ORDER BY PCT desc;")
 
+plot_ly(both_pitchers, x = ~ERA, color = I("black")) %>%
+  add_markers(y = ~W, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE , color = ~inducted) %>%
+  add_lines(y = ~fitted(loess(W ~ ERA)),
+            line = list(color = '#000000'),
+            name = "Loess Smoother", showlegend = TRUE) %>%
+  layout(xaxis = list(title = 'W'),
+         yaxis = list(title = 'ERA'))
+
+```
+
+
+```{r , eval = FALSE}
 bpp <- ggplot(both_pitchers, aes(x = ERA, y = W, color = inducted)) + 
   geom_point(data = both_pitchers, text = paste(nameFirst, " ", nameLast)) +
   ggtitle("All Pitchers") +
@@ -398,7 +430,7 @@ bpp <- ggplot(both_pitchers, aes(x = ERA, y = W, color = inducted)) +
 ggplotly(bpp)
 ```
 
-```{r}
+```{r , eval = TRUE}
 not_inducted_all_star_appearances <- db %>%
   dbGetQuery("SELECT tab1.playerID, tab1.nameFirst, tab1.nameLast, tab1.total_games, tab1.firstyear, tab1.lastyear, tab1.diff,
 HallOfFame.inducted
