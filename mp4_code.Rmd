@@ -320,9 +320,11 @@ non_hof_pitch <- plot_ly(pitchers_not_inducted, x = ~ERA, y = ~W, type = 'scatte
 hof_pitch <- plot_ly(pitchers, x = ~ERA, y = ~W, type = 'scatter', mode = 'markers',
         text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
           layout(title = "Inducted Pitchers" , xaxis = era_x , yaxis = wins_y)
-non_hof_pitch
 
-hof_pitch
+p_arranged <- subplot(hof_pitch , non_hof_pitch , titleX = TRUE , titleY = TRUE) %>%
+  layout(showlegend = FALSE , title = "Pitchers on Ballot")
+
+p_arranged
 ```
 
 ```{r}
