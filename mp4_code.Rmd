@@ -415,7 +415,7 @@ GROUP BY playerID order by total_games desc;")
 ```
 
 ```{r}
-both_all_star_appearances <- db %>%
+inducted_all_star_appearances <- db %>%
   dbGetQuery("SELECT tab1.playerID, tab1.nameFirst, tab1.nameLast, tab1.total_games, tab1.firstyear, tab1.lastyear, tab1.diff,
 HallOfFame.inducted
 FROM HallOfFame, 
@@ -426,13 +426,14 @@ FROM lahman.AllstarFull as af
 JOIN Master as ms ON ms.playerID = af.playerID
 GROUP BY af.playerID
 ORDER BY GP desc, total_games desc) as tab1)
-WHERE HallOfFame.playerID=tab1.playerID
+WHERE HallOfFame.playerID=tab1.playerID and HallOfFame.inducted = 'Y'
 GROUP BY playerID order by total_games desc;")
-both_all_star_appearances
+inducted_all_star_appearances
 ```
 
 ```{r}
-ggplot(data = both_all_star_appearances, aes(x = nameLast, y = total_games, color = inducted)) +
-  geom_point()
+ggplot() +
+  geom_point(data = inducted_all_star_appearances, aes(x = nameLast, y = total_games, color = 'red')) +
+  geom_point(data = not_inducted_all_star_appearances, aes(x = nameLast, y = total_games, color = 'blue'))
 ```
 
