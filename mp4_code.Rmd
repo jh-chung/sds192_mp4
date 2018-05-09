@@ -35,7 +35,7 @@ pitchers <- db %>%
     sum(CG) as CG, sum(SHO) as SHO, sum(SV) as SV, sum(W) as W,
     sum(L) as L, sum(H) as H, sum(BB) as BB, sum(ER) as ER,
     sum(SO) as SO, ((sum(ER) / (sum(IPouts)/3)) * 9) as ERA, 
-    ((sum(H) + sum(BB)) / (sum(IPouts) / 3)) as WHIP
+    ((sum(H) + sum(BB)) / (sum(IPouts) / 3)) as WHIP , hof.inducted
     FROM HallOfFame hof
     JOIN Master ma ON ma.playerID = hof.playerID
     JOIN Pitching pi ON pi.playerID = hof.playerID
@@ -52,7 +52,7 @@ hitters <- db %>%
               nameLast, sum(AB) as AB, sum(R) as R, sum(H) as H,
               sum(2B) as 2B, sum(3B) as 3B, sum(HR) as HR,
               sum(RBI) as RBI, sum(SB) as SB, 
-              (sum(H) / sum(AB)) as AVG
+              (sum(H) / sum(AB)) as AVG , hof.inducted
               FROM HallOfFame hof
               JOIN Master ma ON ma.playerID = hof.playerID
               JOIN Batting ba ON ba.playerID = hof.playerID
@@ -138,21 +138,31 @@ hitters <- hitters %>%
   mutate(SLG = ((hitters$'2B' * 2) + (hitters$'3B' * 3) + (hitters$'HR' * 4) + (hitters$'H' - hitters$'2B' - hitters$'3B' - hitters$'HR')) / hitters$'AB')
 ```
 
-```{r}
+```{r (How statistics have changed for HOF players)}
 hit_2 <- ggplot(hitters, aes(x = yearID, y = HR)) +
   geom_point() +
-  stat_smooth()
+  stat_smooth() +
+  theme_economist() 
 hit_3 <- ggplot(hitters, aes(x = yearID, y = AVG)) +
   geom_point() +
-  stat_smooth()
+  stat_smooth() +
+  theme_economist() 
 hit_4 <- ggplot(hitters, aes(x = yearID, y = SB)) +
   geom_point() +
-  stat_smooth()
+  stat_smooth() + 
+  theme_economist() 
 hit_5 <- ggplot(hitters, aes(x = yearID, y = SLG)) +
   geom_point() +
-  stat_smooth()
+  stat_smooth() + 
+  theme_economist() 
 
-grid.arrange(hit_2, hit_3, hit_4, hit_5, ncol = 2)
+
+hit_2 <- ggplotly(hit_2)
+hit_3 <- ggplotly(hit_3)
+hit_4 <- ggplotly(hit_4)
+hit_5 <- ggplotly(hit_5)
+
+subplot(hit_2, hit_3, hit_4 , hit_5 , nrows = 2, margin = 0.04, heights = c(0.6, 0.4))
 ```
 
 ```{r}
