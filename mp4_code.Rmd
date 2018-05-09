@@ -173,6 +173,38 @@ subplot(hitt_2, hitt_3, hitt_4 , hitt_5 , nrows = 2, margin = 0.06, heights = c(
 ```
 
 ```{r}
+hiit_1 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>%
+  add_markers(y = ~HR, text = ~paste('Player: ', nameFirst, "", nameLast)) %>%
+  add_lines(y = ~fitted(loess(HR ~ yearID)),
+            line = list(color = '#07A4B5'),
+            name = "Trendline", showlegend = FALSE) %>%
+  layout(xaxis = list(title = 'Year'),
+         yaxis = list(title = 'HR'))
+hiit_2 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>%
+  add_markers(y = ~AVG, text = ~paste('Player: ', nameFirst, "", nameLast)) %>%
+  add_lines(y = ~fitted(loess(AVG ~ yearID)),
+            line = list(color = '#07A4B5'),
+            name = "Trendline", showlegend = FALSE) %>%
+  layout(xaxis = list(title = 'Year'),
+         yaxis = list(title = 'AVG'))
+hiit_3 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>%
+  add_markers(y = ~SB, text = ~paste('Player: ', nameFirst, "", nameLast)) %>%
+  add_lines(y = ~fitted(loess(SB ~ yearID)),
+            line = list(color = '#07A4B5'),
+            name = "Trendline", showlegend = FALSE) %>%
+  layout(xaxis = list(title = 'Year'),
+         yaxis = list(title = 'SB'))
+hiit_4 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>%
+  add_markers(y = ~SLG, text = ~paste('Player: ', nameFirst, "", nameLast)) %>%
+  add_lines(y = ~fitted(loess(SLG ~ yearID)),
+            line = list(color = '#07A4B5'),
+            name = "Loess Smoother", showlegend = FALSE) %>%
+  layout(xaxis = list(title = 'Year'),
+         yaxis = list(title = 'SLG'))
+subplot(hiit_1, hiit_2, hiit_3 , hiit_4 , nrows = 2, margin = 0.06, heights = c(0.55, 0.45), titleY = TRUE, titleX = TRUE)
+```
+
+```{r}
 pit_2 <- ggplot(pitchers, aes(x = yearID, y = W)) +
   geom_point() +
   stat_smooth()
