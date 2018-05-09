@@ -220,7 +220,7 @@ pit_5 <- ggplot(pitchers, aes(x = yearID, y = CG)) +
 grid.arrange(pit_2, pit_3, pit_4, pit_5, ncol = 2)
 ```
 
-```{r}
+```{r (HOF pitchers over the years)}
 piit_1 <- plot_ly(pitchers, x = ~yearID, color = I("black")) %>%
   add_markers(y = ~W, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE) %>%
   add_lines(y = ~fitted(loess(W ~ yearID)),
