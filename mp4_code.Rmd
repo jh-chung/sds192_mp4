@@ -138,7 +138,7 @@ hitters <- hitters %>%
   mutate(SLG = ((hitters$'2B' * 2) + (hitters$'3B' * 3) + (hitters$'HR' * 4) + (hitters$'H' - hitters$'2B' - hitters$'3B' - hitters$'HR')) / hitters$'AB')
 ```
 
-```{r (How statistics have changed for HOF players)}
+```{r (How statistics have changed for HOF batters)}
 hit_2 <- ggplot(hitters, aes(x = yearID, y = HR)) +
   geom_point() +
   stat_smooth() +
