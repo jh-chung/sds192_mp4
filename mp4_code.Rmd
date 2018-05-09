@@ -21,6 +21,7 @@ library(plotly)
 library(ggrepel)
 library(gridExtra)
 library(ggthemes)
+library(plotly)
 ```
 
 ```{r (Connecting to the Database)}
@@ -467,5 +468,20 @@ inducted_all_star_appearances
 ggplot() +
   geom_point(data = inducted_all_star_appearances, aes(x = nameLast, y = total_games, color = 'red')) +
   geom_point(data = not_inducted_all_star_appearances, aes(x = nameLast, y = total_games, color = 'blue'))
+```
+
+```{r}
+yes<- plot_ly(data = inducted_all_star_appearances,
+        x = ~nameLast, y = ~total_games, type = "bar")
+no <- plot_ly(data = not_inducted_all_star_appearances,
+        x = ~nameLast, y = ~total_games, type = "bar")
+
+subplot(yes, no, nrows = 2, margin = 0.06, heights = c(.5, .5))
+```
+
+```{r}
+ggplot() +
+  geom_bar(stat = "identity", data = inducted_all_star_appearances, aes(x = nameLast, y = total_games), color = 'blue') +
+  geom_bar(stat = "identity", data = not_inducted_all_star_appearances, aes(x = nameLast, y = total_games), color = 'red')
 ```
 
