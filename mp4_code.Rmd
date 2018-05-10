@@ -397,16 +397,6 @@ plot_ly(both_hitters, x = ~AVG, color = I("black")) %>%
          yaxis = list(title = 'HR'))
 ```
 
-```{r eval = FALSE}
-bhp <- ggplot(both_hitters, aes(x = AVG, y = HR, colour = inducted)) +
-  geom_point(data = both_hitters, text = paste(nameFirst, " ", nameLast)) +
-  ggtitle("All Hitters") +
-  xlim(0, .4) +
-  ylim(.15,850)
-ggplotly(bhp)
-
-```
-
 ```{r warning = FALSE, message = FALSE , eval = TRUE}
 both_pitchers <- db %>% 
   dbGetQuery("SELECT sum(inducted = 'Y') as indct, hof.playerID, hof.yearID, ma.nameFirst, ma.nameLast, count(DISTINCT hof.yearID) as num_ballots, hof.ballots , hof.needed , hof.votes , max(votes/ballots) as PCT , hof.inducted,
