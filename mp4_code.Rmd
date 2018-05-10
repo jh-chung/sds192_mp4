@@ -146,7 +146,7 @@ all_pitchers <- pitchers %>%
 hitters <- hitters %>% 
   mutate(SLG = ((hitters$'2B' * 2) + (hitters$'3B' * 3) + (hitters$'HR' * 4) + (hitters$'H' - hitters$'2B' - hitters$'3B' - hitters$'HR')) / hitters$'AB')
 ```
-##Hitting Stats Over Time for Inducted Batters
+## Hitting Stats Over Time for Inducted Batters
 ```{r (How statistics have changed for HOF batters) , eval = FALSE}
 hit_2 <- ggplot(hitters, aes(x = yearID, y = HR)) +
   geom_point() +
@@ -323,19 +323,27 @@ wins_y <- list(
 
   The graphs p_arranged and h_arranged allow us to respectively compare ERA and W for HOF vs. non-HOF pitchers, as well as AVG and HRs for HOF vs. non-HOF hitters. In terms of pitchers that haven't made the Hall of Fame, the one that really sticks out like a sore thumb is Roger Clemens. In terms of overall numbers, his Wins and ERA most resemble Greg Maddux, a historically great pitcher and unquestionable Hall of Famer. For batters, there are a few more interesting cases. Obviously, Barry Bonds is the first name that jumps off the page. The major league leader in home runs with almost a .300 AVG was pretty incredible and fearsome as a hitter. Sure, the main reason he is not in the Hall of Fame is because of the steroids issue, but statistically speaking he deserves to be there. Another interesting case is Edgar Martinez. His average of .312 and 309 career home runs put him statistically similar to Hall of Famers like George Brett, Ryne Sandberg, and Ivan Rodriguez. The main knock against Edgar is not anything to do with steroids, but instead that he spent the majority of his career as a designated hitter, meaning he rarely played the field and didn't contribute defensively. However, again from a statistical perspective, it appears he belongs in the Hall of Fame. Edgar was one of the most feared hitters of his era, playing a memorable role in both the Mariners 1995 postseason run, as well as their historic 2001 116-win season. It seems unfortunate that his reputation of not playing the field much will prevent a player that is one of the better hitters in this generation from reaching the esteemed Hall of Fame.
 
-#Comparing Inducted and Not Inducted Players
+# Comparing Inducted and Not Inducted Players
 
-##Pitchers
+## Pitchers
 ```{r (HOF Pitchers)}
 # Plotting the non-inducted pitchers
 non_hof_pitch <- plot_ly(pitchers_not_inducted, x = ~ERA, y = ~W, type = 'scatter', mode = 'markers',
-        text = ~paste('Player: ', nameFirst , "" , nameLast, yearID)) %>%
-          layout(xaxis = era_x , yaxis = wins_y)
+        text = ~paste('Player: ', nameFirst , "" , nameLast, yearID , inducted)) %>%
+    layout(
+    xaxis = list(range = c(2, 4)),
+    yaxis = list(range = c(0, 550))) %>% 
+  layout(xaxis = era_x , yaxis = wins_y)
 
 # Plotting for hof_pitchers
 hof_pitch <- plot_ly(pitchers, x = ~ERA, y = ~W, type = 'scatter', mode = 'markers',
-        text = ~paste('Player: ', nameFirst , "" , nameLast, yearID)) %>%
-          layout(xaxis = era_x , yaxis = wins_y)
+        text = ~paste('Player: ', nameFirst , "" , nameLast, yearID , inducted)) %>%
+    layout(
+    xaxis = list(range = c(2, 4)),
+    yaxis = list(range = c(0, 550))) %>% 
+  layout(xaxis = era_x , yaxis = wins_y)
+
+
 
 p_arranged <- subplot(hof_pitch , non_hof_pitch , titleX = TRUE , titleY = TRUE) %>%
   layout(showlegend = FALSE)
@@ -391,13 +399,22 @@ hr_y <- list(
   titlefont = f
 ) # Defining the y-axis title
 
+# HOF Batters
 h_1 <- plot_ly(hitters, x = ~AVG, y = ~HR, type = 'scatter', mode = 'markers',
-        text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
-          layout(xaxis = avg_x , yaxis = hr_y)
+        text = ~paste('Player: ', nameFirst , "" , nameLast , inducted)) %>%
+          layout(xaxis = avg_x , yaxis = hr_y) %>%
+    layout( xaxis = list(range = c(.15, .40)),
+            yaxis = list(range = c(0, 800))) %>% 
+    layout(xaxis = avg_x , yaxis = hr_y)
 
+
+# Non-HOF Batters
 h_2 <- plot_ly(batters_not_inducted, x = ~AVG, y = ~HR, type = 'scatter', mode = 'markers',
-        text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
-          layout(xaxis = avg_x , yaxis = hr_y)
+        text = ~paste('Player: ', nameFirst , "" , nameLast , inducted)) %>%
+    layout(
+    xaxis = list(range = c(.15, .40)),
+    yaxis = list(range = c(0, 800))) %>% 
+  layout(xaxis = avg_x , yaxis = hr_y)
 
 h_arranged<- subplot(h_1 , h_2 , titleX = TRUE , titleY = TRUE) %>%
   layout(showlegend = FALSE)
