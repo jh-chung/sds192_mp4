@@ -267,12 +267,14 @@ subplot(piit_1, piit_2, piit_3 , piit_4 , nrows = 2, margin = 0.06, heights = c(
 ```{r}
 ggplot(all_hitters, aes(x = AVG, y = HR)) +
   geom_point() +
-  scale_y_continuous(limits = c(0, 800))
+  scale_y_continuous(limits = c(0, 800)) + 
+  theme_economist()
 ```
 
 ```{r}
 ggplot(all_pitchers, aes(x = ERA, y = W)) +
-  geom_point()
+  geom_point() +
+  theme_economist()
 ```
 
 ```{r message = FALSE, eval = FALSE}
