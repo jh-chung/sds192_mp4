@@ -28,6 +28,7 @@ library(plotly)
 db <- dbConnect_scidb(dbname = "lahman")
 ```
 
+##Inducted Pitchers
 ```{r (Pitchers in the Hall of Fame), warning = FALSE}
 pitchers <- db %>% 
   dbGetQuery(
@@ -48,6 +49,7 @@ HAVING G > 100;"
 pitchers
 ```
 
+##Inducted Batters
 ```{r (Hitters in the Hall of Fame), warning = FALSE}
 hitters <- db %>% 
   dbGetQuery("SELECT hof.playerID, hof.yearID, nameFirst,
@@ -65,7 +67,7 @@ hitters <- db %>%
 hitters
 ```
 
-```{r (Players not inducted), warning = FALSE}
+```{r (Players not inducted), warning = FALSE, eval = FALSE}
 not_inducted <- db %>%
   dbGetQuery("SELECT playerID, yearid, ballots, needed, votes, inducted, 
 sum(inducted = 'Y') as indct
@@ -75,6 +77,7 @@ HAVING indct = 0")
 not_inducted
 ```
 
+##Not Inducted Batters
 ```{r (Batters not inducted), warning = FALSE}
 batters_not_inducted <- db %>% 
   dbGetQuery("SELECT hof.playerID, nameLast, nameFirst,
@@ -104,6 +107,7 @@ ORDER BY PCT desc;")
 batters_not_inducted
 ```
 
+##Not Inducted Pitchers
 ```{r (Pitcheres Not in the Hall of Fame), warning = FALSE}
 pitchers_not_inducted <- db %>%
   dbGetQuery("SELECT hof.playerID, hof.yearID, ma.nameFirst, ma.nameLast, count(DISTINCT hof.yearID) as num_ballots, hof.ballots , hof.needed , hof.votes , max(votes/ballots) as PCT , hof.inducted,
@@ -142,7 +146,7 @@ all_pitchers <- pitchers %>%
 hitters <- hitters %>% 
   mutate(SLG = ((hitters$'2B' * 2) + (hitters$'3B' * 3) + (hitters$'HR' * 4) + (hitters$'H' - hitters$'2B' - hitters$'3B' - hitters$'HR')) / hitters$'AB')
 ```
-
+##Hitting Stats Over Time for Inducted Batters
 ```{r (How statistics have changed for HOF batters) , eval = FALSE}
 hit_2 <- ggplot(hitters, aes(x = yearID, y = HR)) +
   geom_point() +
@@ -230,6 +234,7 @@ pit_5 <- ggplot(pitchers, aes(x = yearID, y = CG)) +
 grid.arrange(pit_2, pit_3, pit_4, pit_5, ncol = 2)
 ```
 
+##Pitching Stats Over Time for Inducted Pitchers
 ```{r (HOF pitchers over the years) , eval = TRUE}
 
 piit_1 <- plot_ly(pitchers, x = ~yearID, color = I("black")) %>%
@@ -314,23 +319,25 @@ wins_y <- list(
   title = "W",
   titlefont = f
 )
-
-# Plotting the non-inducted pitchers
-non_hof_pitch <- plot_ly(pitchers_not_inducted, x = ~ERA, y = ~W, type = 'scatter', mode = 'markers',
-        text = ~paste('Player: ', nameFirst , "" , nameLast, yearID)) %>%
-          layout(title = "Pitchers Not Inducted" , xaxis = era_x , yaxis = wins_y)
 ```
 
   The graphs p_arranged and h_arranged allow us to respectively compare ERA and W for HOF vs. non-HOF pitchers, as well as AVG and HRs for HOF vs. non-HOF hitters. In terms of pitchers that haven't made the Hall of Fame, the one that really sticks out like a sore thumb is Roger Clemens. In terms of overall numbers, his Wins and ERA most resemble Greg Maddux, a historically great pitcher and unquestionable Hall of Famer. For batters, there are a few more interesting cases. Obviously, Barry Bonds is the first name that jumps off the page. The major league leader in home runs with almost a .300 AVG was pretty incredible and fearsome as a hitter. Sure, the main reason he is not in the Hall of Fame is because of the steroids issue, but statistically speaking he deserves to be there. Another interesting case is Edgar Martinez. His average of .312 and 309 career home runs put him statistically similar to Hall of Famers like George Brett, Ryne Sandberg, and Ivan Rodrgiuez. The main knock against Edgar is not anything to do with steroids, but instead that he spent the majority of his career as a designated hitter, meaning he rarely played the field and didn't contribute defensively. However, again from a statistical perspective, it appears he belongs in the Hall of Fame. Edgar was one of the most feared hitters of his era, playing a memorable role in both the Mariners 1995 postseason run, as well as their historic 2001 116-win season. It seems unfortunate that his reputation of not playing the field much will prevent a player that is one of the better hitters in this generation from reaching the esteemed Hall of Fame.
 
+#Comparing Inducted and Not Inducted Players
+##Pitchers
 ```{r (HOF Pitchers)}
+# Plotting the non-inducted pitchers
+non_hof_pitch <- plot_ly(pitchers_not_inducted, x = ~ERA, y = ~W, type = 'scatter', mode = 'markers',
+        text = ~paste('Player: ', nameFirst , "" , nameLast, yearID)) %>%
+          layout(xaxis = era_x , yaxis = wins_y)
+
 # Plotting for hof_pitchers
 hof_pitch <- plot_ly(pitchers, x = ~ERA, y = ~W, type = 'scatter', mode = 'markers',
         text = ~paste('Player: ', nameFirst , "" , nameLast, yearID)) %>%
-          layout(title = "Inducted Pitchers" , xaxis = era_x , yaxis = wins_y)
+          layout(xaxis = era_x , yaxis = wins_y)
 
 p_arranged <- subplot(hof_pitch , non_hof_pitch , titleX = TRUE , titleY = TRUE) %>%
-  layout(showlegend = FALSE , title = "Pitchers on Ballot")
+  layout(showlegend = FALSE)
 
 p_arranged
 ```
@@ -345,6 +352,33 @@ ggplot(pitchers_not_inducted, aes(x = ERA, y = W)) +
   ylim(0,520)
 ```
 
+```{r warning = FALSE, message = FALSE , eval = TRUE}
+both_pitchers <- db %>% 
+  dbGetQuery("SELECT sum(inducted = 'Y') as indct, hof.playerID, hof.yearID, ma.nameFirst, ma.nameLast, count(DISTINCT hof.yearID) as num_ballots, hof.ballots , hof.needed , hof.votes , max(votes/ballots) as PCT , hof.inducted,
+    sum(G)/(count(DISTINCT hof.yearID)) as G, sum(GS)/(count(DISTINCT hof.yearID)) as GS, sum(IPouts/3)/(count(DISTINCT hof.yearID)) as IP, 
+    sum(CG) / (count(DISTINCT hof.yearID)) as CG, sum(SHO) / (count(DISTINCT hof.yearID)) as SHO, sum(SV) / (count(DISTINCT hof.yearID)) as SV, sum(W) / (count(DISTINCT hof.yearID)) as W,
+    sum(L) / (count(DISTINCT hof.yearID)) as L, sum(H) / (count(DISTINCT hof.yearID)) as H, sum(BB) / (count(DISTINCT hof.yearID)) as BB, sum(ER) / (count(DISTINCT hof.yearID)) as ER,
+    sum(SO)/(count(DISTINCT hof.yearID)) as SO, ((sum(ER) / (sum(IPouts)/3)) * 9) as ERA, 
+    ((sum(H) + sum(BB)) / (sum(IPouts) / 3)) as WHIP
+FROM lahman.HallOfFame AS hof
+JOIN lahman.Master AS ma on ma.playerID = hof.playerID
+JOIN lahman.Pitching AS pi on pi.playerID = hof.playerID
+GROUP BY ma.playerID
+HAVING PCT > 0.2
+  AND G > 100
+ORDER BY PCT desc;")
+
+plot_ly(both_pitchers, x = ~ERA, color = I("black")) %>%
+  add_markers(y = ~W, text = ~paste('Player: ', nameFirst, "", nameLast), color = ~inducted, showlegend = TRUE) %>%
+  add_lines(y = ~fitted(loess(W ~ ERA)),
+            line = list(color = '#000000'),
+            name = "Loess Smoother", showlegend = FALSE) %>%
+  layout(xaxis = list(title = 'W'),
+         yaxis = list(title = 'ERA'))
+
+```
+
+##Batters
 ```{r (HOF Batter Interactive Graphics), message = FALSE}
 avg_x <- list(
   title = "AVG",
@@ -358,14 +392,14 @@ hr_y <- list(
 
 h_1 <- plot_ly(hitters, x = ~AVG, y = ~HR, type = 'scatter', mode = 'markers',
         text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
-          layout(title = "Batters Inducted" , xaxis = avg_x , yaxis = hr_y)
+          layout(xaxis = avg_x , yaxis = hr_y)
 
 h_2 <- plot_ly(batters_not_inducted, x = ~AVG, y = ~HR, type = 'scatter', mode = 'markers',
         text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
-          layout(title = "Batter Not Inducted" , xaxis = avg_x , yaxis = hr_y)
+          layout(xaxis = avg_x , yaxis = hr_y)
 
 h_arranged<- subplot(h_1 , h_2 , titleX = TRUE , titleY = TRUE) %>%
-  layout(showlegend = FALSE , title = "Batters on Ballot")
+  layout(showlegend = FALSE)
 
 h_arranged
 ```
@@ -395,40 +429,13 @@ HAVING AB > 4000
 ORDER BY PCT desc;")
 
 plot_ly(both_hitters, x = ~AVG, color = I("black")) %>%
-  add_markers(y = ~HR, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE , color = ~inducted) %>%
+  add_markers(y = ~HR, text = ~paste('Player: ', nameFirst, "", nameLast), color = ~inducted, showlegend = TRUE) %>%
   add_lines(y = ~fitted(loess(HR ~ AVG)),
             line = list(color = '#000000'),
-            name = "Loess Smoother", showlegend = TRUE) %>%
+            name = "Loess Smoother", showlegend = FALSE) %>%
   layout(xaxis = list(title = 'AVG'),
          yaxis = list(title = 'HR'))
 ```
-
-```{r warning = FALSE, message = FALSE , eval = TRUE}
-both_pitchers <- db %>% 
-  dbGetQuery("SELECT sum(inducted = 'Y') as indct, hof.playerID, hof.yearID, ma.nameFirst, ma.nameLast, count(DISTINCT hof.yearID) as num_ballots, hof.ballots , hof.needed , hof.votes , max(votes/ballots) as PCT , hof.inducted,
-    sum(G)/(count(DISTINCT hof.yearID)) as G, sum(GS)/(count(DISTINCT hof.yearID)) as GS, sum(IPouts/3)/(count(DISTINCT hof.yearID)) as IP, 
-    sum(CG) / (count(DISTINCT hof.yearID)) as CG, sum(SHO) / (count(DISTINCT hof.yearID)) as SHO, sum(SV) / (count(DISTINCT hof.yearID)) as SV, sum(W) / (count(DISTINCT hof.yearID)) as W,
-    sum(L) / (count(DISTINCT hof.yearID)) as L, sum(H) / (count(DISTINCT hof.yearID)) as H, sum(BB) / (count(DISTINCT hof.yearID)) as BB, sum(ER) / (count(DISTINCT hof.yearID)) as ER,
-    sum(SO)/(count(DISTINCT hof.yearID)) as SO, ((sum(ER) / (sum(IPouts)/3)) * 9) as ERA, 
-    ((sum(H) + sum(BB)) / (sum(IPouts) / 3)) as WHIP
-FROM lahman.HallOfFame AS hof
-JOIN lahman.Master AS ma on ma.playerID = hof.playerID
-JOIN lahman.Pitching AS pi on pi.playerID = hof.playerID
-GROUP BY ma.playerID
-HAVING PCT > 0.2
-  AND G > 100
-ORDER BY PCT desc;")
-
-plot_ly(both_pitchers, x = ~ERA, color = I("black")) %>%
-  add_markers(y = ~W, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE , color = ~inducted) %>%
-  add_lines(y = ~fitted(loess(W ~ ERA)),
-            line = list(color = '#000000'),
-            name = "Loess Smoother", showlegend = TRUE) %>%
-  layout(xaxis = list(title = 'W'),
-         yaxis = list(title = 'ERA'))
-
-```
-
 
 ```{r , eval = FALSE}
 bpp <- ggplot(both_pitchers, aes(x = ERA, y = W, color = inducted)) + 
@@ -440,7 +447,7 @@ bpp <- ggplot(both_pitchers, aes(x = ERA, y = W, color = inducted)) +
 ggplotly(bpp)
 ```
 
-```{r , eval = TRUE}
+```{r , eval = TRUE, warning = FALSE}
 not_inducted_all_star_appearances <- db %>%
   dbGetQuery("SELECT tab1.playerID, tab1.nameFirst, tab1.nameLast, tab1.total_games, tab1.firstyear, tab1.lastyear, tab1.diff,
 HallOfFame.inducted
@@ -456,7 +463,7 @@ WHERE HallOfFame.playerID=tab1.playerID and HallOfFame.inducted!='Y'
 GROUP BY playerID order by total_games desc;")
 ```
 
-```{r}
+```{r warning = FALSE}
 inducted_all_star_appearances <- db %>%
   dbGetQuery("SELECT tab1.playerID, tab1.nameFirst, tab1.nameLast, tab1.total_games, tab1.firstyear, tab1.lastyear, tab1.diff,
 HallOfFame.inducted
@@ -470,7 +477,6 @@ GROUP BY af.playerID
 ORDER BY GP desc, total_games desc) as tab1)
 WHERE HallOfFame.playerID=tab1.playerID and HallOfFame.inducted = 'Y'
 GROUP BY playerID order by total_games desc;")
-inducted_all_star_appearances
 ```
 
 ```{r eval = FALSE}
@@ -479,6 +485,7 @@ ggplot() +
   geom_point(data = not_inducted_all_star_appearances, aes(x = nameLast, y = total_games, color = 'blue'))
 ```
 
+##Inducted All-Star Game Appearances
 ```{r}
 inducted_all_star_appearances <- inducted_all_star_appearances %>%
   mutate(full_name = paste(nameFirst, nameLast, sep = " "))
@@ -495,6 +502,7 @@ yes<- plot_ly(data = inducted_all_star_appearances,
   showticklabels = FALSE))
 ```
 
+##Not Inducted All-Star Game Appearances
 ```{r}
 not_inducted_all_star_appearances <- not_inducted_all_star_appearances %>%
   mutate(full_name = paste(nameFirst, nameLast, sep = " "))
