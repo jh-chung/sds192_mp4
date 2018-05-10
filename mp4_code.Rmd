@@ -41,6 +41,7 @@ pitchers <- db %>%
     JOIN Master ma ON ma.playerID = hof.playerID
     JOIN Pitching pi ON pi.playerID = hof.playerID
     WHERE hof.inducted = 'Y'
+    AND hof.votedBy = 'BBWAA'
     GROUP BY hof.playerID
 HAVING G > 100;" 
   )
@@ -58,6 +59,7 @@ hitters <- db %>%
               JOIN Master ma ON ma.playerID = hof.playerID
               JOIN Batting ba ON ba.playerID = hof.playerID
               WHERE hof.inducted = 'Y'
+              AND hof.votedBy = 'BBWAA'
               GROUP BY hof.playerID
               HAVING AB > 2000;")
 hitters
