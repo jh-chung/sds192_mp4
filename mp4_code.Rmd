@@ -8,10 +8,11 @@ output:
     df_print: paged
     theme: spacelab
 ---
-  
-  For any baseball player, the highest individual achievement is induction into the Hall of Fame. This is an exclusive club, with 323 inductees, including 226 former Major League Baseball players and 35 players and executives from the Negro League. For our last mini-project, we thought it would be interesting to use data from the lahman data set to explore statistical differences between those inducted in the Hall of Fame and those who were on the cusp, but at least as of yet have not made it. Baseball as a game has changed considerably in the time it has been played, with a greater emphasis being placed on hitting home runs for position players, while strikeouts are at an all-time high. Additionally, as we'll see later on, the game has been tainted somewhat by the steroids era. Our hope in looking at the statistics was to provide some suggestions about certain players that should be inducted into the Hall of Fame among those who have not yet made it.
+  For any baseball player, the highest individual achievement is induction into the Hall of Fame through the BBWAA. This is an exclusive club, with 323 inductees, including 226 former Major League Baseball players and 35 players and executives from the Negro League. For our last mini-project[^1], we thought it would be interesting to use data from the `Lahman` data set to explore statistical differences between those inducted in the Hall of Fame and those who were on the cusp, but at least as of yet have not made it. Baseball as a game has changed considerably in the time it has been played, with a greater emphasis being placed on hitting home runs for position players, while strikeouts are at an all-time high. Additionally, as we will see later on, the game has been tainted somewhat by the Steroid Era. Our hope in looking at the statistics was to provide some suggestions about certain players that should be inducted into the Hall of Fame among those who have not yet made it.
   The first thing we did was to spend considerable time working with SQL to narrow down our queries. We wanted to create objects showing meaningful statistics both for pitchers and hitters currently in the Hall of Fame, as well as similar objects for those pitchers and hitters who have not yet made the Hall of Fame. The batters and pitchers inducted in the Hall of Fame are stored as `hitters` and `pitchers` respectively, while those who have not been inducted are stored as `batters_not_inducted` and `pitchers_not_inducted`.
-  When we look at the graph with All Hitters, a couple things stand out. First, it seems that there is no clear distinction between hitters who are in the Hall of Fame based on AVG and HRs. For instance, it does not appear that those hitters who hit for a higher AVG or more HRs are definitely in the Hall of Fame. Delving in deeper and investigating who the certain players are who haven't been inducted, we see that many of the ones who have the strongest statistical resumes and haven't been inducted are ones with clear connections to performance enhancing drugs (PEDs). For instance, the three highest HR totals for those not inducted in the Hall of Fame according to our search are Barry Bonds, Mark McGwire, and Manny Ramirez, all of whom have been linked to PEDs in the past. This adds an interesting element to the work we've been doing in that simply looking at the statistics is not enough. A greater knowledge that goes beyond the numbers is needed to understand why certain of these players are not in the Hall of Fame. As we've talked about before in this class, an important job of data scientists is to be culturally aware and think deeply about trends or patterns observed in the data, like with racial profiling done by police departments in certain neighborhoods.
+  When we look at the graph with All Hitters, a couple things stand out. First, it seems that there is no clear distinction between hitters who are in the Hall of Fame based on AVG and HRs. For instance, it does not appear that those hitters who hit for a higher AVG or more HRs are definitely in the Hall of Fame. Delving in deeper and investigating who the certain players are who have not been inducted, we see that many of the ones who have the strongest statistical resumes and haven't been inducted are ones with clear connections to performance enhancing drugs (PEDs). For instance, the three highest HR totals for those not inducted in the Hall of Fame according to our search are Barry Bonds, Mark McGwire, and Manny Ramirez, all of whom have been linked to PEDs in the past. This adds an interesting element to the work we have been doing in that simply looking at the statistics is not enough. A greater knowledge that goes beyond the numbers is needed to understand why certain of these players are not in the Hall of Fame. As we have talked about before in this class, an important job of data scientists is to be culturally aware and think deeply about trends or patterns observed in the data, like with racial profiling done by police departments in certain neighborhoods.
+  
+[^1]: https://github.com/jh-chung/sds192_mp4
 
 ```{r (Packages), warning = FALSE, message = FALSE}
 library(mdsr)
@@ -46,6 +47,8 @@ pitchers <- db %>%
     GROUP BY hof.playerID
 HAVING G > 100;" 
   )
+# Specifying BBWAA (Highest authority for bsaeball)
+# Using index hof.inducted = 'Y' and G > 100 to speed it up
 pitchers
 ```
 
@@ -64,6 +67,8 @@ hitters <- db %>%
               AND hof.votedBy = 'BBWAA'
               GROUP BY hof.playerID
               HAVING AB > 2000;")
+
+# Using indices AB > 2000 to speed query up by setting specific standard, used similar indices for all queries
 hitters
 ```
 
@@ -100,7 +105,7 @@ JOIN Master ma ON ma.playerID = hof.playerID
 WHERE hof.yearid > 1979
 GROUP BY hof.playerID
 HAVING indct = 0
-  AND AB > 4000
+  AND AB > 4000 
   AND PCT > 0.2
 ORDER BY PCT desc;")
 
@@ -137,8 +142,9 @@ all_pitchers <- pitchers %>%
   full_join(pitchers_not_inducted)
 ```
 
-  Exploring the Hall of Fame and how the standards for entry may have changed over time, we looked at how career statistics in terms of HR, AVG, SB, and SLG have changed for those inducted over time. Something to note is that for the most part, HRs have increased while AVG and SBs have decreased. There certainly has been a push in recent years with a focus on launch angle to encourage hitters to swing for the fences in a strategy that hasn't been seen to this extent in baseball before. This means more strikeouts and more home runs for many hitters. Players like Mark Reynolds, Chris Davis, and Logan Morrison are poster childs for this revolution. That being said, the trends in the Hall of Fame statistics probably don't even fully represent this change because of the lag between when a player's career is over and five years later when they can first be inducted. So this strategic change may be even more readily apparent in a decade or two.
-  Moving on to the pitchers, we similarly looked at statistical trends in Hall of Fame inductees over time. The most interesting findings are that ERA and Strikeouts has generally increased, and that complete games have decreased. As mentioned in the paragraph above, many hitters have changed their mentality at the plate to try to hit more home runs, at the expense of striking out more. With ERA, the bump in earned runs given up by pitchers may be explained by the fact that hitters have more strength and conditioning than ever before, as well as the help of advanced scouting to look for even the smallest tell in a pitcher's form. Complete games have steadily decreased among those inducted to the Hall of Fame. Starting pitchers these days are much less likely to go deep into games, partially because it is generally believe that they expend more effort every pitch/inning, and because the composition of teams is such that there are high quality relievers to take over the game in late innings so that starters don't have to pitch quite so many innings. Another reason is the wear and tear pitching so fast has on arms. The increased number of reconstructive surgeries like Tommy John surgery also play into the fewer number of complete games being thrown.
+  
+  For Hall of Fame hitters, we looked at how their statistics may have changed over time to understand how the voters of the BBWAA have evaluated players throughout the years. Something to note is that for the most part, HRs have increased while AVG and SBs have decreased. There certainly has been a push in recent years with a focus on launch angle to encourage hitters to swing for the fences in a strategy that hasn't been seen to this extent in baseball before. This means more strikeouts and more home runs for many hitters. Players like Mark Reynolds, Chris Davis, and Logan Morrison are poster childs for this revolution. That being said, the trends in the Hall of Fame statistics probably do not't even fully represent this change because of the lag between when a player's career is over and five years later when they can first be inducted. So this strategic change may be even more readily apparent in a decade or two.
+  Moving on to the pitchers, we similarly looked at statistical trends in Hall of Fame inductees over time. The most interesting findings are that ERA and Strikeouts has generally increased, and that wins and complete games have decreased. As mentioned in the paragraph above, many hitters have changed their mentality at the plate to try to hit more home runs, at the expense of striking out more. With ERA, the bump in earned runs given up by pitchers may be explained by the fact that hitters have more strength and conditioning than ever before, as well as the help of advanced scouting to look for even the smallest tell in a pitcher's form. Wins have decreased over time, most likely a result of more specialized teams that are dependent on a cohesive unit of adequate offensive, defensive, and bullpen support. Complete games have steadily decreased among those inducted to the Hall of Fame. Starting pitchers these days are much less likely to go deep into games, partially because it is generally believe that they expend more effort every pitch/inning, and because the composition of teams is such that there are high quality relievers to take over the game in late innings so that starters don't have to pitch quite so many innings. Another reason is the wear and tear pitching so fast has on arms. The increased number of reconstructive surgeries like Tommy John surgery also play into the fewer number of complete games being thrown.
   
 ```{r}
 #Added slugging percentage here to hitters by our own calculation
@@ -147,39 +153,7 @@ hitters <- hitters %>%
   mutate(SLG = ((hitters$'2B' * 2) + (hitters$'3B' * 3) + (hitters$'HR' * 4) + (hitters$'H' - hitters$'2B' - hitters$'3B' - hitters$'HR')) / hitters$'AB')
 ```
 ## Hitting Stats Over Time for Inducted Batters
-```{r (How statistics have changed for HOF batters) , eval = FALSE}
-hit_2 <- ggplot(hitters, aes(x = yearID, y = HR)) +
-  geom_point() +
-  stat_smooth() +
-  theme_economist() + 
-  xlab("Year") +
-  ylim(0, 800)
-hit_3 <- ggplot(hitters, aes(x = yearID, y = AVG)) +
-  geom_point() +
-  stat_smooth() +
-  theme_economist() + 
-  xlab("Year") +
-  ylim(.18, .4)
-hit_4 <- ggplot(hitters, aes(x = yearID, y = SB)) +
-  geom_point() +
-  stat_smooth() + 
-  theme_economist() + 
-  xlab("Year") +
-  ylim(0, 1500)
-hit_5 <- ggplot(hitters, aes(x = yearID, y = SLG)) +
-  geom_point() +
-  stat_smooth() + 
-  theme_economist() + 
-  xlab("Year") +
-  ylim(.26, .7)
-          
-hitt_2 <- ggplotly(hit_2)
-hitt_3 <- ggplotly(hit_3)
-hitt_4 <- ggplotly(hit_4)
-hitt_5 <- ggplotly(hit_5)
 
-subplot(hitt_2, hitt_3, hitt_4 , hitt_5 , nrows = 2, margin = 0.06, heights = c(0.55, 0.45), titleY = TRUE, titleX = TRUE)
-```
 
 ```{r (Interactive Graphics for HOF Batters) }
 
@@ -218,21 +192,7 @@ hiit_4 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>%
 subplot(hiit_1, hiit_2, hiit_3 , hiit_4 , nrows = 2, margin = 0.06, heights = c(.55, .45), titleY = TRUE, titleX = TRUE) # Arranging all of the graphs together
 ```
 
-```{r , eval = FALSE}
-pit_2 <- ggplot(pitchers, aes(x = yearID, y = W)) +
-  geom_point() +
-  stat_smooth()
-pit_3 <- ggplot(pitchers, aes(x = yearID, y = SO)) +
-  geom_point() +
-  stat_smooth()
-pit_4 <- ggplot(pitchers, aes(x = yearID, y = ERA)) +
-  geom_point() +
-  stat_smooth()
-pit_5 <- ggplot(pitchers, aes(x = yearID, y = CG)) +
-  geom_point() +
-  stat_smooth()
-grid.arrange(pit_2, pit_3, pit_4, pit_5, ncol = 2)
-```
+
 
 ##Pitching Stats Over Time for Inducted Pitchers
 ```{r (HOF pitchers over the years) , eval = TRUE}
@@ -286,19 +246,6 @@ ggplot(all_pitchers, aes(x = ERA, y = W)) +
   theme_economist()
 ```
 
-```{r message = FALSE, eval = FALSE}
-pp <- ggplot(pitchers, aes(x = ERA, y = W)) + 
-  geom_point(text = paste(nameFirst, " ", nameLast)) +
-  ggtitle("Pitchers Inducted") +
-  xlim(1.5,4) +
-  ylim(0,520)
-ggplotly(pp)
-
-plot_ly(pitchers, x = ~ERA, y = ~W, type = 'scatter', mode = 'markers',
-        text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
-          layout(title = "Pitchers Inducted" , xaxis = era_x , yaxis = wins_y)
-
-```
 
 ```{r (Non-Inducted Pitchers Plot)}
 # Defining a font, this is from the plotly package. We wanted an interactive graphic
@@ -323,11 +270,13 @@ wins_y <- list(
 
   The graphs p_arranged and h_arranged allow us to respectively compare ERA and W for HOF vs. non-HOF pitchers, as well as AVG and HRs for HOF vs. non-HOF hitters. 
   
-  In terms of pitchers that haven't made the Hall of Fame, the one that really sticks out like a sore thumb is Roger Clemens. In terms of overall numbers, his Wins and ERA most resemble Greg Maddux, a historically great pitcher and unquestionable Hall of Famer. 
+  In terms of pitchers that haven't made the Hall of Fame, the one that really sticks out like a sore thumb is Roger Clemens. In terms of overall numbers, his Wins and ERA most resemble Greg Maddux, a historically great pitcher and unquestionable Hall of Famer. His career strikeouts are also surpassed only by Nolan Ryan and Randy Johnson.
   
   ![Roger Clemens](https://d3d2maoophos6y.cloudfront.net/wp-content/uploads/2017/08/04071637/506100276_MLB.jpg){.class width=500px}
   
-  For batters, there are a few more interesting cases. Obviously, Barry Bonds is the first name that jumps off the page. The major league leader in home runs with almost a .300 AVG was pretty incredible and fearsome as a hitter. Sure, the main reason he is not in the Hall of Fame is because of the steroids issue, but statistically speaking he deserves to be there. 
+  For batters, there are a few more interesting cases. Obviously, Barry Bonds is the first name that jumps off the page. The major league leader in home runs with almost a .300 AVG was pretty incredible and fearsome as a hitter. Sure, the main reason he is not in the Hall of Fame is because of the steroids issue, but statistically speaking he deserves to be there. If is our belief that "[e]ven if Bonds and Clemens — and other players known to have used performance-enhancing drugs along the way — are denied their spots in Cooperstown, they are inexorably woven into the fabric of the game." [^2] Furthermore, no players compare "in ability or accomplishment — not even close — to either Bonds or Clemens. A Hall of Fame without either of those two is a Hall of Fame that doesn't tell the full story of the game," such as the Steroid Era. Afterall, the "The Hall of Fame's mission is to preserve the sport's history, honor excellence within the game and make a connection between the generations of people who enjoy baseball." Even if the character of players such as Bonds and Clemens is questionable, their historical careers warrant recognition. The use of steroids in baseball is certainly an important facet of the sport's history and should not be hidden.
+
+[^2]: https://www.washingtonpost.com/sports/cut-the-nonsense-roger-clemens-and-barry-bonds-should-be-in-the-hall-of-fame/2018/01/23/89c6a5ea-006c-11e8-9d31-d72cf78dbeee_story.html?noredirect=on.
   
   ![Barry Bonds](https://cbsnews1.cbsistatic.com/hub/i/r/2011/03/29/0cf45f9d-a643-11e2-a3f0-029118418759/resize/620x465/f6c1c75ebdcce237e2401a5d70e25e81/barry_bonds_51563362.jpg){.class width=500px}
   
@@ -468,15 +417,6 @@ plot_ly(both_hitters, x = ~AVG, color = I("black")) %>%
          yaxis = list(title = 'HR'))
 ```
 
-```{r , eval = FALSE}
-bpp <- ggplot(both_pitchers, aes(x = ERA, y = W, color = inducted)) + 
-  geom_point(data = both_pitchers, text = paste(nameFirst, " ", nameLast)) +
-  ggtitle("All Pitchers") +
-  xlim(1.5,4) +
-  ylim(0,520)
-
-ggplotly(bpp)
-```
 
 ```{r , eval = TRUE, warning = FALSE}
 not_inducted_all_star_appearances <- db %>%
@@ -510,11 +450,7 @@ WHERE HallOfFame.playerID=tab1.playerID and HallOfFame.inducted = 'Y'
 GROUP BY playerID order by total_games desc;")
 ```
 
-```{r eval = FALSE}
-ggplot() +
-  geom_point(data = inducted_all_star_appearances, aes(x = nameLast, y = total_games, color = 'red')) +
-  geom_point(data = not_inducted_all_star_appearances, aes(x = nameLast, y = total_games, color = 'blue'))
-```
+
 
 ##Inducted All-Star Game Appearances
 ```{r}
