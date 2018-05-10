@@ -131,7 +131,6 @@ HAVING indct = 0
 ORDER BY PCT desc;")
 
 pitchers_not_inducted
-# Use save() to save it as a .rda and then load() it later w/ eval = FALSE
 ```
   
   For Hall of Fame hitters, we looked at how their statistics may have changed over time to understand how the voters of the BBWAA have evaluated players throughout the years. Something to note is that for the most part, HRs have increased while AVG and SBs have decreased. There certainly has been a push in recent years with a focus on launch angle to encourage hitters to swing for the fences in a strategy that hasn't been seen to this extent in baseball before. This means more strikeouts and more home runs for many hitters. Players like Mark Reynolds, Chris Davis, and Logan Morrison are poster childs for this revolution. That being said, the trends in the Hall of Fame statistics probably do not't even fully represent this change because of the lag between when a player's career is over and five years later when they can first be inducted. So this strategic change may be even more readily apparent in a decade or two.
@@ -139,7 +138,7 @@ pitchers_not_inducted
   
 ```{r}
 #Added slugging percentage here to hitters by our own calculation
-#because it wasn't included in the lahman statistics.
+# because it wasn't included in the lahman statistics.
 hitters <- hitters %>% 
   mutate(SLG = ((hitters$'2B' * 2) + (hitters$'3B' * 3) + (hitters$'HR' * 4) + (hitters$'H' - hitters$'2B' - hitters$'3B' - hitters$'HR')) / hitters$'AB')
 ```
@@ -187,7 +186,7 @@ subplot(hiit_1, hiit_2, hiit_3 , hiit_4 , nrows = 2, margin = 0.06, heights = c(
 
 ##Pitching Stats Over Time for Inducted Pitchers
 ```{r (HOF pitchers over the years) , eval = TRUE}
-
+# Looking at wins over the years
 piit_1 <- plot_ly(pitchers, x = ~yearID, color = I("black")) %>%
   add_markers(y = ~W, text = ~paste('Player: ', nameFirst, "", nameLast, yearID), showlegend = FALSE) %>%
   add_lines(y = ~fitted(loess(W ~ yearID)),
@@ -230,7 +229,7 @@ subplot(piit_1, piit_2, piit_3 , piit_4 , nrows = 2, margin = 0.06, heights = c(
 ```{r (Non-Inducted Pitchers Plot)}
 # Defining a font, this is from the plotly package. We wanted an interactive graphic
 f <- list(
-  family = "Courier New, monospace",
+  family = "Times New Roman" , 
   size = 18,
   color = "#7f7f7f"
 ) 
@@ -473,6 +472,6 @@ subplot(yes, no, nrows = 1, margin = 0.06, heights = 1, shareY = TRUE, titleX = 
 ```{r eval = FALSE}
 ggplot() +
   geom_bar(stat = "identity", data = inducted_all_star_appearances, aes(x = nameLast, y = total_games), color = 'blue') +
-  geom_bar(stat = "identity", data = not_inducted_all_star_appearances, aes(x = nameLast, y = total_games), color = 'red')
+  geom_bar(stat = "identity", data = not_inducted_all_star_appearances, aes(x = nameLast, y = total_games), color = 'red'
 ```
 
