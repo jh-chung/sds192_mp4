@@ -133,15 +133,6 @@ ORDER BY PCT desc;")
 pitchers_not_inducted
 # Use save() to save it as a .rda and then load() it later w/ eval = FALSE
 ```
-
-```{r message = FALSE, warning = FALSE}
-all_hitters <- hitters %>% 
-  full_join(batters_not_inducted)
-
-all_pitchers <- pitchers %>% 
-  full_join(pitchers_not_inducted)
-```
-
   
   For Hall of Fame hitters, we looked at how their statistics may have changed over time to understand how the voters of the BBWAA have evaluated players throughout the years. Something to note is that for the most part, HRs have increased while AVG and SBs have decreased. There certainly has been a push in recent years with a focus on launch angle to encourage hitters to swing for the fences in a strategy that hasn't been seen to this extent in baseball before. This means more strikeouts and more home runs for many hitters. Players like Mark Reynolds, Chris Davis, and Logan Morrison are poster childs for this revolution. That being said, the trends in the Hall of Fame statistics probably do not't even fully represent this change because of the lag between when a player's career is over and five years later when they can first be inducted. So this strategic change may be even more readily apparent in a decade or two.
   Moving on to the pitchers, we similarly looked at statistical trends in Hall of Fame inductees over time. The most interesting findings are that ERA and Strikeouts has generally increased, and that wins and complete games have decreased. As mentioned in the paragraph above, many hitters have changed their mentality at the plate to try to hit more home runs, at the expense of striking out more. With ERA, the bump in earned runs given up by pitchers may be explained by the fact that hitters have more strength and conditioning than ever before, as well as the help of advanced scouting to look for even the smallest tell in a pitcher's form. Wins have decreased over time, most likely a result of more specialized teams that are dependent on a cohesive unit of adequate offensive, defensive, and bullpen support. Complete games have steadily decreased among those inducted to the Hall of Fame. Starting pitchers these days are much less likely to go deep into games, partially because it is generally believe that they expend more effort every pitch/inning, and because the composition of teams is such that there are high quality relievers to take over the game in late innings so that starters don't have to pitch quite so many innings. Another reason is the wear and tear pitching so fast has on arms. The increased number of reconstructive surgeries like Tommy John surgery also play into the fewer number of complete games being thrown.
@@ -233,18 +224,7 @@ subplot(piit_1, piit_2, piit_3 , piit_4 , nrows = 2, margin = 0.06, heights = c(
 # Showing all of the HOF pitchers in one graphic
 ```
 
-```{r eval = FALSE}
-ggplot(all_hitters, aes(x = AVG, y = HR)) +
-  geom_point() +
-  scale_y_continuous(limits = c(0, 800)) + 
-  theme_economist()
-```
 
-```{r eval = FALSE}
-ggplot(all_pitchers, aes(x = ERA, y = W)) +
-  geom_point() +
-  theme_economist()
-```
 
 
 ```{r (Non-Inducted Pitchers Plot)}
