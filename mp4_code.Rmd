@@ -176,7 +176,7 @@ subplot(hitt_2, hitt_3, hitt_4 , hitt_5 , nrows = 2, margin = 0.06, heights = c(
 ```{r (Interactive Graphics for HOF Batters) }
 
 hiit_1 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>% # Showing the yearID when you hover over
-  add_markers(y = ~HR, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE) %>%
+  add_markers(y = ~HR, text = ~paste('Player: ', nameFirst, "", nameLast, yearID), showlegend = FALSE) %>%
   add_lines(y = ~fitted(loess(HR ~ yearID)), # Using the loess method for our trend line
             line = list(color = '#07A4B5'), # Making it a distinct color to separate from the black points
             name = "Trendline", showlegend = FALSE) %>%
@@ -184,7 +184,7 @@ hiit_1 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>% # Showing the ye
          yaxis = list(title = 'HR')) # Home run on the y-axis
 
 hiit_2 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>%
-  add_markers(y = ~AVG, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE) %>%
+  add_markers(y = ~AVG, text = ~paste('Player: ', nameFirst, "", nameLast, yearID), showlegend = FALSE) %>%
   add_lines(y = ~fitted(loess(AVG ~ yearID)),
             line = list(color = '#07A4B5'),
             name = "Trendline", showlegend = FALSE) %>%
@@ -192,7 +192,7 @@ hiit_2 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>%
          yaxis = list(title = 'AVG'))
 
 hiit_3 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>%
-  add_markers(y = ~SB, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE) %>%
+  add_markers(y = ~SB, text = ~paste('Player: ', nameFirst, "", nameLast, yearID), showlegend = FALSE) %>%
   add_lines(y = ~fitted(loess(SB ~ yearID)),
             line = list(color = '#07A4B5'),
             name = "Trendline", showlegend = FALSE) %>%
@@ -200,7 +200,7 @@ hiit_3 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>%
          yaxis = list(title = 'SB'))
 
 hiit_4 <- plot_ly(hitters, x = ~yearID, color = I("black")) %>%
-  add_markers(y = ~SLG, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE) %>%
+  add_markers(y = ~SLG, text = ~paste('Player: ', nameFirst, "", nameLast, yearID), showlegend = FALSE) %>%
   add_lines(y = ~fitted(loess(SLG ~ yearID)),
             line = list(color = '#07A4B5'),
             name = "Loess Smoother", showlegend = FALSE) %>%
@@ -229,7 +229,7 @@ grid.arrange(pit_2, pit_3, pit_4, pit_5, ncol = 2)
 ```{r (HOF pitchers over the years) , eval = TRUE}
 
 piit_1 <- plot_ly(pitchers, x = ~yearID, color = I("black")) %>%
-  add_markers(y = ~W, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE) %>%
+  add_markers(y = ~W, text = ~paste('Player: ', nameFirst, "", nameLast, yearID), showlegend = FALSE) %>%
   add_lines(y = ~fitted(loess(W ~ yearID)),
             line = list(color = '#07A4B5'),
             name = "Trendline", showlegend = FALSE) %>%
@@ -237,7 +237,7 @@ piit_1 <- plot_ly(pitchers, x = ~yearID, color = I("black")) %>%
          yaxis = list(title = 'W'))
 
 piit_2 <- plot_ly(pitchers, x = ~yearID, color = I("black")) %>%
-  add_markers(y = ~SO, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE) %>%
+  add_markers(y = ~SO, text = ~paste('Player: ', nameFirst, "", nameLast, yearID), showlegend = FALSE) %>%
   add_lines(y = ~fitted(loess(SO ~ yearID)),
             line = list(color = '#07A4B5'),
             name = "Trendline", showlegend = FALSE) %>%
@@ -245,7 +245,7 @@ piit_2 <- plot_ly(pitchers, x = ~yearID, color = I("black")) %>%
          yaxis = list(title = 'SO'))
 
 piit_3 <- plot_ly(pitchers, x = ~yearID, color = I("black")) %>%
-  add_markers(y = ~ERA, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE) %>%
+  add_markers(y = ~ERA, text = ~paste('Player: ', nameFirst, "", nameLast, yearID), showlegend = FALSE) %>%
   add_lines(y = ~fitted(loess(ERA ~ yearID)),
             line = list(color = '#07A4B5'),
             name = "Trendline", showlegend = FALSE) %>%
@@ -253,7 +253,7 @@ piit_3 <- plot_ly(pitchers, x = ~yearID, color = I("black")) %>%
          yaxis = list(title = 'ERA'))
 
 piit_4 <- plot_ly(pitchers, x = ~yearID, color = I("black")) %>%
-  add_markers(y = ~CG, text = ~paste('Player: ', nameFirst, "", nameLast), showlegend = FALSE) %>%
+  add_markers(y = ~CG, text = ~paste('Player: ', nameFirst, "", nameLast, yearID), showlegend = FALSE) %>%
   add_lines(y = ~fitted(loess(CG ~ yearID)),
             line = list(color = '#07A4B5'),
             name = "Loess Smoother", showlegend = FALSE) %>%
@@ -264,14 +264,14 @@ subplot(piit_1, piit_2, piit_3 , piit_4 , nrows = 2, margin = 0.06, heights = c(
 # Showing all of the HOF pitchers in one graphic
 ```
 
-```{r}
+```{r eval = FALSE}
 ggplot(all_hitters, aes(x = AVG, y = HR)) +
   geom_point() +
   scale_y_continuous(limits = c(0, 800)) + 
   theme_economist()
 ```
 
-```{r}
+```{r eval = FALSE}
 ggplot(all_pitchers, aes(x = ERA, y = W)) +
   geom_point() +
   theme_economist()
@@ -313,14 +313,14 @@ wins_y <- list(
 
 # Plotting the non-inducted pitchers
 non_hof_pitch <- plot_ly(pitchers_not_inducted, x = ~ERA, y = ~W, type = 'scatter', mode = 'markers',
-        text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
+        text = ~paste('Player: ', nameFirst , "" , nameLast, yearID)) %>%
           layout(title = "Pitchers Not Inducted" , xaxis = era_x , yaxis = wins_y)
 ```
 
 ```{r (HOF Pitchers)}
 # Plotting for hof_pitchers
 hof_pitch <- plot_ly(pitchers, x = ~ERA, y = ~W, type = 'scatter', mode = 'markers',
-        text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
+        text = ~paste('Player: ', nameFirst , "" , nameLast, yearID)) %>%
           layout(title = "Inducted Pitchers" , xaxis = era_x , yaxis = wins_y)
 
 p_arranged <- subplot(hof_pitch , non_hof_pitch , titleX = TRUE , titleY = TRUE) %>%
@@ -329,7 +329,7 @@ p_arranged <- subplot(hof_pitch , non_hof_pitch , titleX = TRUE , titleY = TRUE)
 p_arranged
 ```
 
-```{r}
+```{r eval = FALSE}
 ggplot(pitchers_not_inducted, aes(x = ERA, y = W)) + 
   geom_point() +
   geom_label_repel(
@@ -351,11 +351,11 @@ hr_y <- list(
 ) # Defining the y-axis title
 
 h_1 <- plot_ly(hitters, x = ~AVG, y = ~HR, type = 'scatter', mode = 'markers',
-        text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
+        text = ~paste('Player: ', nameFirst , "" , nameLast, yearID)) %>%
           layout(title = "Batters Inducted" , xaxis = avg_x , yaxis = hr_y)
 
 h_2 <- plot_ly(batters_not_inducted, x = ~AVG, y = ~HR, type = 'scatter', mode = 'markers',
-        text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
+        text = ~paste('Player: ', nameFirst , "" , nameLast, yearID)) %>%
           layout(title = "Batter Not Inducted" , xaxis = avg_x , yaxis = hr_y)
 
 h_arranged<- subplot(h_1 , h_2 , titleX = TRUE , titleY = TRUE) %>%
@@ -477,7 +477,7 @@ GROUP BY playerID order by total_games desc;")
 inducted_all_star_appearances
 ```
 
-```{r}
+```{r eval = FALSE}
 ggplot() +
   geom_point(data = inducted_all_star_appearances, aes(x = nameLast, y = total_games, color = 'red')) +
   geom_point(data = not_inducted_all_star_appearances, aes(x = nameLast, y = total_games, color = 'blue'))
@@ -491,8 +491,12 @@ inducted_all_star_appearances$full_name <- factor(inducted_all_star_appearances$
 inducted_all_star_appearances
 
 yes<- plot_ly(data = inducted_all_star_appearances,
-        x = ~full_name, y = ~total_games, type = "bar")
-yes
+        x = ~full_name, y = ~total_games, type = "bar", name = 'Inducted') %>%
+  layout(
+    yaxis = list(range = c(0,25), title = "All-Star Game Appearances"),
+    xaxis = list(
+  title = "Player",
+  showticklabels = FALSE))
 ```
 
 ```{r}
@@ -502,16 +506,20 @@ not_inducted_all_star_appearances <- not_inducted_all_star_appearances %>%
 not_inducted_all_star_appearances$full_name <- factor(not_inducted_all_star_appearances$full_name, levels = unique(not_inducted_all_star_appearances$full_name)[order(not_inducted_all_star_appearances$total_games, decreasing = FALSE)])
 
 no <- plot_ly(data = not_inducted_all_star_appearances,
-        x = ~full_name, y = ~total_games, type = "bar")
-
-no
+        x = ~full_name, y = ~total_games, type = "bar", name = 'Not Inducted') %>%
+  layout(
+    yaxis = list(range = c(0,25), title = "All-Star Game Appearances"),
+    xaxis = list(
+  title = "Player",
+  showticklabels = FALSE))
+not_inducted_all_star_appearances
 ```
 
 ```{r}
-subplot(yes, no, nrows = 2, margin = 0.06, heights = c(.5, .5))
+subplot(yes, no, nrows = 1, margin = 0.06, heights = 1, shareY = TRUE, titleX = TRUE)
 ```
 
-```{r}
+```{r eval = FALSE}
 ggplot() +
   geom_bar(stat = "identity", data = inducted_all_star_appearances, aes(x = nameLast, y = total_games), color = 'blue') +
   geom_bar(stat = "identity", data = not_inducted_all_star_appearances, aes(x = nameLast, y = total_games), color = 'red')
