@@ -351,11 +351,11 @@ hr_y <- list(
 ) # Defining the y-axis title
 
 h_1 <- plot_ly(hitters, x = ~AVG, y = ~HR, type = 'scatter', mode = 'markers',
-        text = ~paste('Player: ', nameFirst , "" , nameLast, yearID)) %>%
+        text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
           layout(title = "Batters Inducted" , xaxis = avg_x , yaxis = hr_y)
 
 h_2 <- plot_ly(batters_not_inducted, x = ~AVG, y = ~HR, type = 'scatter', mode = 'markers',
-        text = ~paste('Player: ', nameFirst , "" , nameLast, yearID)) %>%
+        text = ~paste('Player: ', nameFirst , "" , nameLast )) %>%
           layout(title = "Batter Not Inducted" , xaxis = avg_x , yaxis = hr_y)
 
 h_arranged<- subplot(h_1 , h_2 , titleX = TRUE , titleY = TRUE) %>%
