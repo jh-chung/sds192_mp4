@@ -321,7 +321,20 @@ wins_y <- list(
 )
 ```
 
-  The graphs p_arranged and h_arranged allow us to respectively compare ERA and W for HOF vs. non-HOF pitchers, as well as AVG and HRs for HOF vs. non-HOF hitters. In terms of pitchers that haven't made the Hall of Fame, the one that really sticks out like a sore thumb is Roger Clemens. In terms of overall numbers, his Wins and ERA most resemble Greg Maddux, a historically great pitcher and unquestionable Hall of Famer. For batters, there are a few more interesting cases. Obviously, Barry Bonds is the first name that jumps off the page. The major league leader in home runs with almost a .300 AVG was pretty incredible and fearsome as a hitter. Sure, the main reason he is not in the Hall of Fame is because of the steroids issue, but statistically speaking he deserves to be there. Another interesting case is Edgar Martinez. His average of .312 and 309 career home runs put him statistically similar to Hall of Famers like George Brett, Ryne Sandberg, and Ivan Rodriguez. The main knock against Edgar is not anything to do with steroids, but instead that he spent the majority of his career as a designated hitter, meaning he rarely played the field and didn't contribute defensively. However, again from a statistical perspective, it appears he belongs in the Hall of Fame. Edgar was one of the most feared hitters of his era, playing a memorable role in both the Mariners 1995 postseason run, as well as their historic 2001 116-win season. It seems unfortunate that his reputation of not playing the field much will prevent a player that is one of the better hitters in this generation from reaching the esteemed Hall of Fame.
+  The graphs p_arranged and h_arranged allow us to respectively compare ERA and W for HOF vs. non-HOF pitchers, as well as AVG and HRs for HOF vs. non-HOF hitters. 
+  
+  In terms of pitchers that haven't made the Hall of Fame, the one that really sticks out like a sore thumb is Roger Clemens. In terms of overall numbers, his Wins and ERA most resemble Greg Maddux, a historically great pitcher and unquestionable Hall of Famer. 
+  
+  ![Roger Clemens](https://d3d2maoophos6y.cloudfront.net/wp-content/uploads/2017/08/04071637/506100276_MLB.jpg){.class width=500px}
+  
+  For batters, there are a few more interesting cases. Obviously, Barry Bonds is the first name that jumps off the page. The major league leader in home runs with almost a .300 AVG was pretty incredible and fearsome as a hitter. Sure, the main reason he is not in the Hall of Fame is because of the steroids issue, but statistically speaking he deserves to be there. 
+  
+  ![Barry Bonds](https://cbsnews1.cbsistatic.com/hub/i/r/2011/03/29/0cf45f9d-a643-11e2-a3f0-029118418759/resize/620x465/f6c1c75ebdcce237e2401a5d70e25e81/barry_bonds_51563362.jpg){.class width=500px}
+  
+  Another interesting case is Edgar Martinez. His average of .312 and 309 career home runs put him statistically similar to Hall of Famers like George Brett, Ryne Sandberg, and Ivan Rodriguez. The main knock against Edgar is not anything to do with steroids, but instead that he spent the majority of his career as a designated hitter, meaning he rarely played the field and didn't contribute defensively. However, again from a statistical perspective, it appears he belongs in the Hall of Fame. Edgar was one of the most feared hitters of his era, playing a memorable role in both the Mariners 1995 postseason run, as well as their historic 2001 116-win season. It seems unfortunate that his reputation of not playing the field much will prevent a player that is one of the better hitters in this generation from reaching the esteemed Hall of Fame.
+  
+  ![Edgar Martinez](http://o.seattletimes.nwsource.com/art/sports/mariners/edgarmartinez/finnigan_1.jpg){.class width=500px}
+  
 
 #Comparing Inducted and Not Inducted Players
 
