@@ -484,11 +484,30 @@ ggplot() +
 ```
 
 ```{r}
-yes<- plot_ly(data = inducted_all_star_appearances,
-        x = ~nameLast, y = ~total_games, type = "bar")
-no <- plot_ly(data = not_inducted_all_star_appearances,
-        x = ~nameLast, y = ~total_games, type = "bar")
+inducted_all_star_appearances <- inducted_all_star_appearances %>%
+  mutate(full_name = paste(nameFirst, nameLast, sep = " "))
 
+inducted_all_star_appearances$full_name <- factor(inducted_all_star_appearances$full_name, levels = unique(inducted_all_star_appearances$full_name)[order(inducted_all_star_appearances$total_games, decreasing = FALSE)])
+inducted_all_star_appearances
+
+yes<- plot_ly(data = inducted_all_star_appearances,
+        x = ~full_name, y = ~total_games, type = "bar")
+yes
+```
+
+```{r}
+not_inducted_all_star_appearances <- not_inducted_all_star_appearances %>%
+  mutate(full_name = paste(nameFirst, nameLast, sep = " "))
+
+not_inducted_all_star_appearances$full_name <- factor(not_inducted_all_star_appearances$full_name, levels = unique(not_inducted_all_star_appearances$full_name)[order(not_inducted_all_star_appearances$total_games, decreasing = FALSE)])
+
+no <- plot_ly(data = not_inducted_all_star_appearances,
+        x = ~full_name, y = ~total_games, type = "bar")
+
+no
+```
+
+```{r}
 subplot(yes, no, nrows = 2, margin = 0.06, heights = c(.5, .5))
 ```
 
