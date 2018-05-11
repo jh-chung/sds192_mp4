@@ -50,7 +50,8 @@ pitchers <- db %>%
 HAVING G > 100;" 
   )
 # Specifying BBWAA (Highest authority for bsaeball)
-# Using index hof.inducted = 'Y' and G > 100 to speed it up
+# Using index hof.inducted = 'Y' and G > 100 to make sure they didn't just pitch for one game
+# Adding up all the pitching stats per player
 pitchers
 ```
 
@@ -70,18 +71,9 @@ hitters <- db %>%
               GROUP BY hof.playerID
               HAVING AB > 2000;")
 
-# Using indices AB > 2000 to speed query up by setting specific standard, used similar indices for all queries
+# Using indices AB > 2000 to sort for players that regularly bat, not some pitchers who've only batted a few times
+# Adding up all the batting stats
 hitters
-```
-
-```{r (Players not inducted), warning = FALSE, eval = FALSE}
-not_inducted <- db %>%
-  dbGetQuery("SELECT playerID, yearid, ballots, needed, votes, inducted, 
-sum(inducted = 'Y') as indct
-FROM HallOfFame
-GROUP BY playerID
-HAVING indct = 0")
-not_inducted
 ```
 
 ##Not Inducted Batters
@@ -187,6 +179,7 @@ subplot(hiit_1, hiit_2, hiit_3 , hiit_4 , nrows = 2, margin = 0.06, heights = c(
 
 ##Pitching Stats Over Time for Inducted Pitchers
   Moving on to the pitchers, we similarly looked at statistical trends in Hall of Fame inductees over time. The most interesting findings are that ERA and Strikeouts has generally increased, and that wins and complete games have decreased. As mentioned in the paragraph above, many hitters have changed their mentality at the plate to try to hit more home runs, at the expense of striking out more. With ERA, the bump in earned runs given up by pitchers may be explained by the fact that hitters have more strength and conditioning than ever before, as well as the help of advanced scouting to look for even the smallest tell in a pitcher's form. Wins have decreased over time, most likely a result of more specialized teams that are dependent on a cohesive unit of adequate offensive, defensive, and bullpen support. Complete games have steadily decreased among those inducted to the Hall of Fame. Starting pitchers these days are much less likely to go deep into games, partially because it is generally believe that they expend more effort every pitch/inning, and because the composition of teams is such that there are high quality relievers to take over the game in late innings so that starters don't have to pitch quite so many innings. Another reason is the wear and tear pitching so fast has on arms. The increased number of reconstructive surgeries like Tommy John surgery also play into the fewer number of complete games being thrown.
+  
 ```{r (HOF pitchers over the years) , eval = TRUE}
 # Looking at wins over the years
 piit_1 <- plot_ly(pitchers, x = ~yearID, color = I("black")) %>%
@@ -222,11 +215,8 @@ piit_4 <- plot_ly(pitchers, x = ~yearID, color = I("black")) %>%
          yaxis = list(title = 'CG'))
 
 subplot(piit_1, piit_2, piit_3 , piit_4 , nrows = 2, margin = 0.06, heights = c(.55, .45), titleY = TRUE, titleX = TRUE)
-# Showing all of the HOF pitchers in one graphic
+# Showing all of the pitching stats over time in one graphic
 ```
-
-
-
 
 ```{r (Non-Inducted Pitchers Plot)}
 # Defining a font, this is from the plotly package. We wanted an interactive graphic
@@ -286,22 +276,10 @@ hof_pitch <- plot_ly(pitchers, x = ~ERA, y = ~W, type = 'scatter', mode = 'marke
     yaxis = list(range = c(0, 550))) %>% 
   layout(xaxis = era_x , yaxis = wins_y)
 
-
-
 p_arranged <- subplot(hof_pitch , non_hof_pitch , titleX = TRUE , titleY = TRUE) %>%
   layout(showlegend = FALSE)
 
 p_arranged
-```
-
-```{r eval = FALSE}
-ggplot(pitchers_not_inducted, aes(x = ERA, y = W)) + 
-  geom_point() +
-  geom_label_repel(
-    aes(label = nameLast)) +
-  ggtitle("Pitchers not Inducted") +
-  xlim(1.5,4) +
-  ylim(0,520)
 ```
 
 ```{r warning = FALSE, message = FALSE , eval = TRUE}
@@ -398,6 +376,23 @@ plot_ly(both_hitters, x = ~AVG, color = I("black")) %>%
          yaxis = list(title = 'HR'))
 ```
 
+```{r warning = FALSE}
+inducted_all_star_appearances <- db %>%
+  dbGetQuery("SELECT tab1.playerID, tab1.nameFirst, tab1.nameLast, tab1.total_games, tab1.firstyear, tab1.lastyear, tab1.diff,
+HallOfFame.inducted
+FROM HallOfFame, 
+((SELECT af.playerID, nameFirst, nameLast, 
+sum(af.GP) as total_games, GP,
+min(af.yearID) as firstyear, max(af.yearID) as lastyear, max(af.yearID)-min(af.yearID) as diff
+FROM lahman.AllstarFull as af
+JOIN Master as ms ON ms.playerID = af.playerID
+GROUP BY af.playerID
+ORDER BY GP desc, total_games desc) as tab1)
+WHERE HallOfFame.playerID=tab1.playerID and HallOfFame.inducted = 'Y'
+GROUP BY playerID order by total_games desc;")
+#Had to use a subquery here because of problems with rows being multiplied
+#Adding up the total number of all-star games played in per player
+```
 
 ```{r , eval = TRUE, warning = FALSE}
 not_inducted_all_star_appearances <- db %>%
@@ -415,31 +410,16 @@ WHERE HallOfFame.playerID=tab1.playerID and HallOfFame.inducted!='Y'
 GROUP BY playerID order by total_games desc;")
 ```
 
-```{r warning = FALSE}
-inducted_all_star_appearances <- db %>%
-  dbGetQuery("SELECT tab1.playerID, tab1.nameFirst, tab1.nameLast, tab1.total_games, tab1.firstyear, tab1.lastyear, tab1.diff,
-HallOfFame.inducted
-FROM HallOfFame, 
-((SELECT af.playerID, nameFirst, nameLast, 
-sum(af.GP) as total_games, GP,
-min(af.yearID) as firstyear, max(af.yearID) as lastyear, max(af.yearID)-min(af.yearID) as diff
-FROM lahman.AllstarFull as af
-JOIN Master as ms ON ms.playerID = af.playerID
-GROUP BY af.playerID
-ORDER BY GP desc, total_games desc) as tab1)
-WHERE HallOfFame.playerID=tab1.playerID and HallOfFame.inducted = 'Y'
-GROUP BY playerID order by total_games desc;")
-```
-
-
 
 ##Inducted All-Star Game Appearances
 ```{r}
 inducted_all_star_appearances <- inducted_all_star_appearances %>%
   mutate(full_name = paste(nameFirst, nameLast, sep = " "))
+#adding a full name variable
 
 inducted_all_star_appearances$full_name <- factor(inducted_all_star_appearances$full_name, levels = unique(inducted_all_star_appearances$full_name)[order(inducted_all_star_appearances$total_games, decreasing = FALSE)])
 inducted_all_star_appearances
+#ordering the data by the total all-star games appearances descending so on the bar chart they will show up in order
 
 yes<- plot_ly(data = inducted_all_star_appearances,
         x = ~full_name, y = ~total_games, type = "bar", name = 'Inducted') %>%
@@ -463,7 +443,8 @@ no <- plot_ly(data = not_inducted_all_star_appearances,
     yaxis = list(range = c(0,25), title = "All-Star Game Appearances"),
     xaxis = list(
   title = "Player",
-  showticklabels = FALSE))
+  showticklabels = FALSE)) 
+#had to get rid of the x-axis labels because not all the names fit
 not_inducted_all_star_appearances
 ```
 
@@ -471,9 +452,28 @@ not_inducted_all_star_appearances
 subplot(yes, no, nrows = 1, margin = 0.06, heights = 1, shareY = TRUE, titleX = TRUE)
 ```
 
-```{r eval = FALSE}
-ggplot() +
-  geom_bar(stat = "identity", data = inducted_all_star_appearances, aes(x = nameLast, y = total_games), color = 'blue') +
-  geom_bar(stat = "identity", data = not_inducted_all_star_appearances, aes(x = nameLast, y = total_games), color = 'red'
+```{r}
+avg_inducted_all_star_appearances <- inducted_all_star_appearances%>%
+  summarize(mean(total_games))
+avg_inducted_all_star_appearances
+# calculating the average number of all-star appearances for inducted players
 ```
 
+```{r}
+above_seven_not_inducted_all_star_appearances <- db %>%
+  dbGetQuery("SELECT tab1.playerID, tab1.nameFirst, tab1.nameLast, tab1.total_games, tab1.firstyear, tab1.lastyear, tab1.diff,
+HallOfFame.inducted
+FROM HallOfFame, 
+((SELECT af.playerID, nameFirst, nameLast, 
+sum(af.GP) as total_games, GP,
+min(af.yearID) as firstyear, max(af.yearID) as lastyear, max(af.yearID)-min(af.yearID) as diff
+FROM lahman.AllstarFull as af
+JOIN Master as ms ON ms.playerID = af.playerID
+GROUP BY af.playerID
+ORDER BY GP desc, total_games desc) as tab1)
+WHERE HallOfFame.playerID=tab1.playerID and HallOfFame.inducted!='Y'
+AND total_games > 7
+GROUP BY playerID order by total_games desc;")
+dim(above_seven_not_inducted_all_star_appearances)
+# finding the number of players (rows) that have been to more all-star games than the average inducted player
+```
