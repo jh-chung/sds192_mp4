@@ -411,11 +411,8 @@ WHERE HallOfFame.playerID=tab1.playerID and HallOfFame.inducted!='Y'
 GROUP BY playerID order by total_games desc;")
 ```
 
-<<<<<<< HEAD
-=======
 # All-star Appearances
 All-star appearances is another important statistic to consider because it illustrates how a player compared to his competition, with more dominating players making more all star appearances for many years. This graphic illustrates that there are many non-inducted players that have been to more all-star games than inducted counterparts: among inducted players, the average number of all-star appearances is 7.22, and there are an astonishing 44 non-inducted players above this bar.
->>>>>>> 73e8c227ac42dfc1a9300673e9ccb8edb41eb881
 
 ##Inducted All-Star Game Appearances
 ```{r}
