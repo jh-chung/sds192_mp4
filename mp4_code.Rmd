@@ -462,7 +462,7 @@ avg_inducted_all_star_appearances
 # calculating the average number of all-star appearances for inducted players
 ```
 
-```{r}
+```{r warning = FALSE}
 above_seven_not_inducted_all_star_appearances <- db %>%
   dbGetQuery("SELECT tab1.playerID, tab1.nameFirst, tab1.nameLast, tab1.total_games, tab1.firstyear, tab1.lastyear, tab1.diff,
 HallOfFame.inducted
