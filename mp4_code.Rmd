@@ -1,5 +1,5 @@
 ---
-title: "Which Players are in the Ballpark of the Hall of Fame?"
+title: "The Hall of Fame's Ballpark"
 author: "Jay-Ho Chung, Brigitte Goeler-Slough, Nathan Ives"
 date: "4/23/2018"
 output: 
